@@ -5,6 +5,8 @@ import { createSessions } from './claude-sessions.js';
 import { createServer } from './server.js';
 import { createPermissions } from './permissions.js';
 import { startFocus } from './focus.js';
+import { startGithub } from './github.js';
+import { startCalendar } from './calendar.js';
 import { startMetrics } from './metrics.js';
 import { startWeather } from './weather.js';
 import { lanAddresses } from './network.js';
@@ -25,6 +27,8 @@ const server = createServer({ token, bus, sessions, permissions, focus });
 
 startMetrics(bus, cfg.metricsIntervalMs);
 startWeather(bus, cfg.weather);
+startGithub(bus, cfg.github);
+startCalendar(bus, cfg.calendarUrl);
 bus.publish('permissions', { pending: [] });
 bus.publish('claude', { sessions: [], activity: sessions.activity(), last: null });
 
