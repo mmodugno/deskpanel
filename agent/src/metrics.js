@@ -26,15 +26,29 @@ export function memoryInfo(total = os.totalmem(), free = os.freemem()) {
   };
 }
 
+export const HISTORY_MAX = 120;
+
+export function pushHistory(arr, value, max = HISTORY_MAX) {
+  arr.push(value);
+  if (arr.length > max) arr.shift();
+  return arr;
+}
+
 export function startMetrics(bus, intervalMs = 2000) {
+  const hist = { cpu: [], mem: [] };
   let prev = sample();
   const tick = () => {
     const next = sample();
+    const cpu = cpuPercent(prev, next);
+    const mem = memoryInfo();
+    pushHistory(hist.cpu, cpu);
+    pushHistory(hist.mem, mem.percent);
     bus.publish('system', {
-      cpu: cpuPercent(prev, next),
-      mem: memoryInfo(),
+      cpu,
+      mem,
       host: os.hostname(),
       uptimeMin: Math.round(os.uptime() / 60),
+      hist: { cpu: [...hist.cpu], mem: [...hist.mem] },
     });
     prev = next;
   };

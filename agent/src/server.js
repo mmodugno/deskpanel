@@ -79,7 +79,7 @@ export function createServer({ token, bus, sessions }) {
       }
       const result = sessions.apply(payload);
       if (!result) return json(202, { ignored: true });
-      bus.publish('claude', { sessions: sessions.list(), last: result });
+      bus.publish('claude', { sessions: sessions.list(), activity: sessions.activity(), last: result });
       return json(200, { ok: true });
     }
     return json(404, { error: 'not-found' });

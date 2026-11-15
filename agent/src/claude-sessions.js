@@ -18,6 +18,18 @@ export function projectName(cwd) {
 
 export function createSessions(now = () => Date.now()) {
   const sessions = new Map();
+  // Cuántas veces empezó a trabajar una sesión en cada hora del día de hoy.
+  let activity = new Array(24).fill(0);
+  let activityDay = new Date(now()).toDateString();
+
+  function bump() {
+    const d = new Date(now());
+    if (d.toDateString() !== activityDay) {
+      activity = new Array(24).fill(0);
+      activityDay = d.toDateString();
+    }
+    activity[d.getHours()] += 1;
+  }
 
   return {
     apply(payload) {
@@ -34,6 +46,7 @@ export function createSessions(now = () => Date.now()) {
 
       const prev = sessions.get(id);
       const changed = !prev || prev.state !== state;
+      if (changed && state === 'working') bump();
       sessions.set(id, {
         id,
         project: projectName(payload.cwd),
@@ -42,6 +55,9 @@ export function createSessions(now = () => Date.now()) {
         since: changed ? now() : prev.since,
       });
       return { event, state, changed };
+    },
+    activity() {
+      return [...activity];
     },
     list() {
       return [...sessions.values()].sort((a, b) => b.since - a.since);
