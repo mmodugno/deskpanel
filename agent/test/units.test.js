@@ -102,3 +102,28 @@ test('config: valida puerto y JSON inválido', () => {
   assert.throws(() => loadConfig('/no/existe.json', { DESKPANEL_PORT: '99999' }), /Puerto/);
   assert.throws(() => loadConfig('/no/existe.json', { DESKPANEL_PORT: 'abc' }), /Puerto/);
 });
+
+import { pushHistory } from '../src/metrics.js';
+
+test('historial: tope de muestras, descarta las más viejas', () => {
+  const h = [];
+  for (let i = 0; i < 5; i++) pushHistory(h, i, 3);
+  assert.deepEqual(h, [2, 3, 4]);
+});
+
+test('actividad: cuenta cuándo empieza a trabajar y reinicia al cambiar el día', () => {
+  let t = new Date(2026, 10, 15, 9, 30).getTime();
+  const s = createSessions(() => t);
+  const ev = { session_id: 'a', cwd: '/p/x' };
+  s.apply({ ...ev, hook_event_name: 'PreToolUse' });
+  s.apply({ ...ev, hook_event_name: 'PostToolUse' }); // sigue trabajando: no suma
+  s.apply({ ...ev, hook_event_name: 'Stop' });
+  t = new Date(2026, 10, 15, 9, 50).getTime();
+  s.apply({ ...ev, hook_event_name: 'PreToolUse' });
+  assert.equal(s.activity()[9], 2);
+  t = new Date(2026, 10, 16, 10, 0).getTime();
+  s.apply({ ...ev, hook_event_name: 'Stop' });
+  s.apply({ ...ev, hook_event_name: 'PreToolUse' });
+  assert.equal(s.activity()[9], 0);
+  assert.equal(s.activity()[10], 1);
+});
