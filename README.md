@@ -66,11 +66,11 @@ Mirá [docs/claude-code.md](docs/claude-code.md) para conectar los hooks.
 npm test
 ```
 
-22 tests con `node --test` (token, métricas, sesiones, clima con fetch simulado, servidor HTTP, SSE y funciones del panel). El CI corre en Ubuntu y Windows con Node 20 y 22.
+27 tests con `node --test` (token, métricas, sesiones, clima con fetch simulado, servidor HTTP, SSE y funciones del panel). El CI corre en Ubuntu y Windows con Node 20 y 22.
 
 ## Estado y pendientes
 
-- [x] Agente, panel, alertas, modo USB, tests y CI
+- [x] Agente, panel, alertas, modo USB, gráficos en vivo, temas, modo demo, tests y CI
 - [ ] Widget de música sonando en Windows
 - [ ] Widget de cuotas de uso
 - [ ] Probado en Windows real (hoy el desarrollo corrió en Linux; el CI cubre Windows)
