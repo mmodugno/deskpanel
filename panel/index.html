@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0e13">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <title>deskpanel</title>
+</head>
+<body>
+  <header class="bar">
+    <span class="brand">deskpanel</span>
+    <span id="host" class="host"></span>
+    <span id="link" class="link" data-state="connecting">conectando…</span>
+  </header>
+
+  <main class="board">
+    <section class="cell clock" aria-label="Hora">
+      <div id="time" class="time">--:--</div>
+      <div id="date" class="date"></div>
+    </section>
+
+    <section class="cell gauge" aria-label="Procesador">
+      <svg viewBox="0 0 120 70" role="img" aria-label="Uso de CPU">
+        <path class="track" d="M10 62 A50 50 0 0 1 110 62" pathLength="100"/>
+        <path id="cpuArc" class="arc" d="M10 62 A50 50 0 0 1 110 62" pathLength="100"/>
+      </svg>
+      <div id="cpuValue" class="gauge-value">--%</div>
+      <div class="label">CPU</div>
+    </section>
+
+    <section class="cell mem" aria-label="Memoria">
+      <div class="label">Memoria</div>
+      <div class="meter"><div id="memFill" class="fill"></div></div>
+      <div id="memText" class="mem-text">-- / -- GB</div>
+    </section>
+
+    <section class="cell claude" aria-label="Sesiones de Claude Code">
+      <div class="label">Claude Code</div>
+      <ul id="sessions" class="sessions"><li class="empty">Sin sesiones activas</li></ul>
+    </section>
+
+    <section id="weatherCell" class="cell weather" aria-label="Clima" hidden>
+      <div id="weatherTemp" class="temp"></div>
+      <div id="weatherText" class="label"></div>
+    </section>
+  </main>
+
+  <button id="arm" class="arm" type="button">Tocá para activar sonido y mantener la pantalla encendida</button>
+  <div id="flash" class="flash" aria-hidden="true"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
