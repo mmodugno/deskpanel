@@ -10,14 +10,17 @@
   <title>deskpanel</title>
 </head>
 <body>
-  <div class="glow" aria-hidden="true"></div>
+  <div class="glow" aria-hidden="true"><i></i><i></i><i></i></div>
 
   <header class="bar">
     <div>
       <div id="greeting" class="greeting">Hola</div>
       <div id="host" class="host"></div>
     </div>
-    <span id="link" class="chip" data-state="connecting"><i></i><b>conectando</b></span>
+    <div class="bar-right">
+      <button id="theme" class="chip theme" type="button" aria-label="Cambiar tema"><i></i><b id="themeName">Violeta</b></button>
+      <span id="link" class="chip" data-state="connecting"><i></i><b>conectando</b></span>
+    </div>
   </header>
 
   <main class="board">
@@ -31,7 +34,7 @@
         <svg viewBox="0 0 120 120" role="img" aria-label="Uso de CPU">
           <defs>
             <linearGradient id="g1" x1="0" y1="1" x2="1" y2="0">
-              <stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#d8b4fe"/>
+              <stop offset="0" class="g-a"/><stop offset="1" class="g-b"/>
             </linearGradient>
           </defs>
           <circle class="track" cx="60" cy="60" r="46" pathLength="100"/>

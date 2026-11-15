@@ -78,3 +78,19 @@ export function barHeights(counts) {
   const max = Math.max(...counts, 0);
   return counts.map((c) => (max === 0 ? 0 : Math.round((c / max) * 100)));
 }
+
+export const THEMES = [
+  { id: 'violeta', name: 'Violeta' },
+  { id: 'medianoche', name: 'Medianoche' },
+  { id: 'orquidea', name: 'Orquídea' },
+  { id: 'grafito', name: 'Grafito' },
+];
+
+export function nextTheme(current) {
+  const i = THEMES.findIndex((t) => t.id === current);
+  return THEMES[(i + 1) % THEMES.length].id;
+}
+
+export function themeName(id) {
+  return (THEMES.find((t) => t.id === id) ?? THEMES[0]).name;
+}

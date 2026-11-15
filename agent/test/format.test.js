@@ -73,3 +73,13 @@ test('barHeights: normaliza a la hora más activa', () => {
   assert.deepEqual(barHeights([0, 2, 4]), [0, 50, 100]);
   assert.deepEqual(barHeights([0, 0]), [0, 0]);
 });
+
+import { nextTheme, themeName } from '../../panel/format.js';
+
+test('temas: ciclo completo y valor desconocido cae en el primero', () => {
+  assert.equal(nextTheme('violeta'), 'medianoche');
+  assert.equal(nextTheme('grafito'), 'violeta');
+  assert.equal(nextTheme('raro'), 'violeta');
+  assert.equal(themeName('orquidea'), 'Orquídea');
+  assert.equal(themeName('raro'), 'Violeta');
+});

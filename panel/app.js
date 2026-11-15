@@ -1,4 +1,4 @@
-import { formatTime, formatDate, formatSince, isHot, alertFor, readToken, greetingFor, isNight, STATE_LABEL, arcDash, sparkPath, barHeights } from './format.js';
+import { formatTime, formatDate, formatSince, isHot, alertFor, readToken, greetingFor, isNight, STATE_LABEL, arcDash, sparkPath, barHeights, THEMES, nextTheme, themeName } from './format.js';
 import { arm, notify } from './alerts.js';
 import { startDemo } from './demo.js';
 
@@ -8,11 +8,20 @@ const store = {
   get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
   set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
 };
+function applyTheme(id) {
+  const valid = THEMES.some((t) => t.id === id) ? id : THEMES[0].id;
+  document.documentElement.dataset.theme = valid;
+  $('themeName').textContent = themeName(valid);
+  document.querySelector('meta[name="theme-color"]').content = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  store.set('deskpanel.theme', valid);
+}
+$('theme').addEventListener('click', () => applyTheme(nextTheme(document.documentElement.dataset.theme)));
 const token = readToken(location.search, store.get('deskpanel.token'));
 if (token) {
   store.set('deskpanel.token', token);
   history.replaceState(null, '', location.pathname); // el token no queda en la barra
 }
+applyTheme(store.get('deskpanel.theme'));
 
 function setLink(state, text) {
   $('link').dataset.state = state;
