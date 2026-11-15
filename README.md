@@ -12,6 +12,8 @@ Todo por la red local o por cable USB, **sin nube y sin cuentas**.
 </p>
 <sub>Capturas con datos de prueba.</sub>
 
+**Demo en vivo:** https://mmodugno.github.io/deskpanel/panel/?demo (datos de mentira generados en el navegador).
+
 ## Cómo funciona
 
 ```
@@ -64,7 +66,7 @@ Mirá [docs/claude-code.md](docs/claude-code.md) para conectar los hooks.
 npm test
 ```
 
-21 tests con `node --test` (token, métricas, sesiones, clima con fetch simulado, servidor HTTP, SSE y funciones del panel). El CI corre en Ubuntu y Windows con Node 20 y 22.
+22 tests con `node --test` (token, métricas, sesiones, clima con fetch simulado, servidor HTTP, SSE y funciones del panel). El CI corre en Ubuntu y Windows con Node 20 y 22.
 
 ## Estado y pendientes
 

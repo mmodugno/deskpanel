@@ -1,5 +1,6 @@
 import { formatTime, formatDate, formatSince, isHot, alertFor, readToken, greetingFor, isNight, STATE_LABEL, arcDash } from './format.js';
 import { arm, notify } from './alerts.js';
+import { startDemo } from './demo.js';
 
 const $ = (id) => document.getElementById(id);
 const token = readToken(location.search, localStorage.getItem('deskpanel.token'));
@@ -83,7 +84,15 @@ function renderSessionAges() {
   }
 }
 
+// Demo: con ?demo, o publicado en GitHub Pages (no hay agente ahí).
+const demo = new URLSearchParams(location.search).has('demo') || location.hostname.endsWith('github.io');
+
 function connect() {
+  if (demo) {
+    setLink('ok', 'demo');
+    firstClaudeEvent = false;
+    return startDemo(handlers);
+  }
   if (!token) return setLink('error', 'falta el token: abrí el link que imprime el agente');
   const es = new EventSource(`/api/stream?token=${encodeURIComponent(token)}`);
   for (const topic of Object.keys(handlers)) {

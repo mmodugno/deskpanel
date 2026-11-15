@@ -48,3 +48,13 @@ test('arcDash: 270° de recorrido y valores acotados', () => {
   assert.equal(arcDash(200), '75.0 100');
   assert.equal(arcDash(-5), '0.0 100');
 });
+
+import { nextCpu, nextState } from '../../panel/demo.js';
+
+test('demo: la CPU se mantiene acotada y el ciclo de estados vuelve a empezar', () => {
+  assert.equal(nextCpu(95, () => 1), 96);
+  assert.equal(nextCpu(5, () => 0), 4);
+  assert.equal(nextState('working'), 'waiting');
+  assert.equal(nextState('waiting'), 'done');
+  assert.equal(nextState('done'), 'working');
+});
