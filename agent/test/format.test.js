@@ -109,3 +109,39 @@ test('rangeText: mínimo y máximo del historial', () => {
   assert.equal(rangeText([10, 40, 25]), 'mín 10% · máx 40%');
   assert.equal(rangeText([]), '');
 });
+
+import { clockMs, focusRemaining, focusProgress, primaryLabel, relativeStart, eventTime, prLabel } from '../../panel/format.js';
+
+test('foco: reloj, restante y progreso', () => {
+  assert.equal(clockMs(25 * 60000), '25:00');
+  assert.equal(clockMs(61001), '01:02');
+  assert.equal(clockMs(-5), '00:00');
+  const running = { running: true, endsAt: 1000 + 30000, remainingMs: 0, totalMs: 60000 };
+  assert.equal(focusRemaining(running, 1000), 30000);
+  assert.equal(focusProgress(running, 1000), 0.5);
+  assert.equal(focusRemaining({ running: false, remainingMs: 42000 }, 999), 42000);
+  assert.equal(focusProgress({ totalMs: 0 }, 0), 0);
+});
+
+test('foco: texto del botón principal', () => {
+  assert.equal(primaryLabel({ running: true, totalMs: 60000 }, 0), 'Pausar');
+  assert.equal(primaryLabel({ running: false, remainingMs: 60000, totalMs: 60000 }, 0), 'Iniciar');
+  assert.equal(primaryLabel({ running: false, remainingMs: 30000, totalMs: 60000 }, 0), 'Seguir');
+});
+
+test('calendario: cuánto falta y hora', () => {
+  const now = new Date(2026, 10, 15, 12, 0).getTime();
+  const at = (h, m = 0, d = 15) => new Date(2026, 10, d, h, m).getTime();
+  assert.equal(relativeStart({ start: at(12, 25), end: at(13) }, now), 'en 25 min');
+  assert.equal(relativeStart({ start: at(15), end: at(16) }, now), 'en 3 h');
+  assert.equal(relativeStart({ start: at(9, 0, 16), end: at(10, 0, 16) }, now), 'mañana');
+  assert.equal(relativeStart({ start: at(11), end: at(13) }, now), 'en curso');
+  assert.equal(relativeStart({ start: at(0, 0, 15), allDay: true }, now), 'hoy');
+  assert.equal(eventTime({ allDay: true }), 'Todo el día');
+  assert.equal(eventTime({ start: at(9, 5) }), '09:05');
+});
+
+test('github: etiqueta de PRs', () => {
+  assert.equal(prLabel(0), '0 PRs');
+  assert.equal(prLabel(1), '1 PR');
+});
