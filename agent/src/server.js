@@ -67,6 +67,10 @@ export function createServer({ token, bus, sessions }) {
       return json(200, bus.snapshot());
     }
     if (req.method === 'POST' && url.pathname === '/api/hook') {
+      if (Number(req.headers['content-length']) > MAX_BODY) {
+        res.writeHead(413, { 'Content-Type': 'application/json', Connection: 'close' });
+        return res.end(JSON.stringify({ error: 'demasiado-grande' }));
+      }
       let payload;
       try {
         payload = JSON.parse(await readBody(req));
