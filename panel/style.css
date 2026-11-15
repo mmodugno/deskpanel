@@ -13,6 +13,23 @@
   --radius: 22px;
   font-family: ui-rounded, "SF Pro Rounded", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
 }
+/* Temas: solo cambian las variables de color. */
+:root[data-theme="medianoche"] {
+  --bg: #070b1c; --bg2: #0d1535; --card: rgba(18, 28, 66, .55); --card-line: rgba(129, 160, 255, .18);
+  --ink: #eaf0ff; --dim: #8a9bc8; --violet: #4f7cff; --lilac: #a5c0ff; --orchid: #d6e4ff;
+  --aurora1: rgba(79, 124, 255, .30); --aurora2: rgba(56, 189, 248, .16); --aurora3: rgba(99, 102, 241, .18);
+}
+:root[data-theme="orquidea"] {
+  --bg: #1a0a1f; --bg2: #2a1033; --card: rgba(64, 22, 64, .55); --card-line: rgba(240, 171, 252, .2);
+  --ink: #fdf0ff; --dim: #c79bd0; --violet: #c04cfd; --lilac: #f0abfc; --orchid: #fae8ff;
+  --aurora1: rgba(192, 76, 253, .28); --aurora2: rgba(244, 114, 182, .18); --aurora3: rgba(168, 85, 247, .18);
+}
+:root[data-theme="grafito"] {
+  --bg: #0c0c10; --bg2: #16161d; --card: rgba(30, 30, 40, .6); --card-line: rgba(200, 200, 230, .12);
+  --ink: #f2f2f7; --dim: #8e8ea3; --violet: #8b8bb8; --lilac: #c9c9e0; --orchid: #ececf6;
+  --aurora1: rgba(139, 139, 184, .18); --aurora2: rgba(100, 100, 140, .12); --aurora3: rgba(160, 160, 200, .1);
+}
+:root { --aurora1: rgba(124, 92, 255, .30); --aurora2: rgba(192, 132, 252, .18); --aurora3: rgba(99, 102, 241, .16); }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
 body {
@@ -27,12 +44,14 @@ body {
 }
 body.night { filter: brightness(.55) saturate(.85); }
 
-.glow {
-  position: fixed; inset: -20%; z-index: 0; pointer-events: none;
-  background:
-    radial-gradient(40% 35% at 20% 10%, rgba(124, 92, 255, .28), transparent 70%),
-    radial-gradient(45% 40% at 90% 85%, rgba(192, 132, 252, .16), transparent 70%);
-}
+.glow { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.glow i { position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%; filter: blur(70px); will-change: transform; }
+.glow i:nth-child(1) { background: radial-gradient(circle, var(--aurora1), transparent 65%); top: -25vmax; left: -15vmax; animation: drift1 38s ease-in-out infinite alternate; }
+.glow i:nth-child(2) { background: radial-gradient(circle, var(--aurora2), transparent 65%); bottom: -30vmax; right: -20vmax; animation: drift2 46s ease-in-out infinite alternate; }
+.glow i:nth-child(3) { background: radial-gradient(circle, var(--aurora3), transparent 65%); top: 30%; left: 35%; width: 40vmax; height: 40vmax; animation: drift3 55s ease-in-out infinite alternate; }
+@keyframes drift1 { to { transform: translate(18vmax, 14vmax) scale(1.15); } }
+@keyframes drift2 { to { transform: translate(-16vmax, -12vmax) scale(1.2); } }
+@keyframes drift3 { to { transform: translate(-14vmax, 10vmax) scale(.85); } }
 .bar, .board, .arm { position: relative; z-index: 1; }
 
 .bar { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px 10px; }
@@ -115,7 +134,7 @@ body.night { filter: brightness(.55) saturate(.85); }
 @keyframes flash { 0% { opacity: 1; box-shadow: inset 0 0 90px 30px rgba(255, 143, 163, .55); } 100% { opacity: 0; box-shadow: inset 0 0 90px 30px rgba(255, 143, 163, 0); } }
 
 @media (max-width: 520px) { .clock, .claude { grid-column: span 1; } .bar { padding-inline: 16px; } }
-@media (prefers-reduced-motion: reduce) { .s-state i, .flash.on { animation: none; } .arc, .fill { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .s-state i, .flash.on, .glow i { animation: none; } .arc, .fill { transition: none; } }
 
 .chart { grid-column: span 2; }
 .chart-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
@@ -139,3 +158,9 @@ body.night { filter: brightness(.55) saturate(.85); }
 .activity { grid-column: span 2; }
 @media (min-width: 900px) { .claude { grid-column: 1 / -1; } }
 @media (max-width: 520px) { .activity { grid-column: span 1; } }
+
+.chip.theme { cursor: pointer; font: inherit; font-size: 13px; color: var(--ink); min-height: 36px; }
+.chip.theme i { background: linear-gradient(135deg, var(--violet), var(--orchid)); }
+.bar-right { display: flex; gap: 8px; }
+#g1 .g-a { stop-color: var(--violet); }
+#g1 .g-b { stop-color: var(--orchid); }
