@@ -49,6 +49,29 @@
       <div id="memText" class="sub">-- / -- GB</div>
     </section>
 
+    <section class="card chart" aria-label="Historial de uso">
+      <div class="chart-head">
+        <span class="label">Últimos minutos</span>
+        <span class="legend"><i class="k-cpu"></i>CPU <i class="k-mem"></i>Memoria</span>
+      </div>
+      <svg id="chart" viewBox="0 0 300 100" preserveAspectRatio="none" role="img" aria-label="CPU y memoria en el tiempo">
+        <defs>
+          <linearGradient id="areaCpu" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" class="s-a"/><stop offset="1" class="s-b"/>
+          </linearGradient>
+        </defs>
+        <path id="areaPath" fill="url(#areaCpu)"/>
+        <path id="memPath" class="line-mem"/>
+        <path id="cpuPath" class="line-cpu"/>
+      </svg>
+    </section>
+
+    <section class="card activity" aria-label="Actividad de Claude Code hoy">
+      <div class="label">Claude Code hoy</div>
+      <div id="bars" class="bars"></div>
+      <div class="hours"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>23h</span></div>
+    </section>
+
     <section class="card claude" aria-label="Sesiones de Claude Code">
       <div class="label">Claude Code</div>
       <ul id="sessions" class="sessions"></ul>

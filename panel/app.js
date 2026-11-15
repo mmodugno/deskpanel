@@ -1,4 +1,4 @@
-import { formatTime, formatDate, formatSince, isHot, alertFor, readToken, greetingFor, isNight, STATE_LABEL, arcDash } from './format.js';
+import { formatTime, formatDate, formatSince, isHot, alertFor, readToken, greetingFor, isNight, STATE_LABEL, arcDash, sparkPath, barHeights } from './format.js';
 import { arm, notify } from './alerts.js';
 import { startDemo } from './demo.js';
 
@@ -39,6 +39,7 @@ const handlers = {
     $('memBig').firstChild.textContent = d.mem.percent;
     $('memFill').style.width = `${d.mem.percent}%`;
     $('memText').textContent = `${d.mem.usedGb} / ${d.mem.totalGb} GB`;
+    if (d.hist) drawChart(d.hist);
   },
   weather(d) {
     $('weatherCell').hidden = false;
@@ -47,12 +48,34 @@ const handlers = {
   },
   claude(d) {
     renderSessions(d.sessions);
+    if (d.activity) drawBars(d.activity);
     const kind = alertFor(d.last);
     if (kind && !firstClaudeEvent) notify(kind, $('flash'));
     firstClaudeEvent = false;
   },
 };
 let firstClaudeEvent = true; // el estado inicial al conectar no dispara alertas
+
+function drawChart(hist) {
+  const cpu = sparkPath(hist.cpu, 300, 100);
+  $('cpuPath').setAttribute('d', cpu.line);
+  $('areaPath').setAttribute('d', cpu.area);
+  $('memPath').setAttribute('d', sparkPath(hist.mem, 300, 100).line);
+}
+
+function drawBars(counts) {
+  const wrap = $('bars');
+  if (wrap.children.length !== 24) {
+    wrap.replaceChildren(...Array.from({ length: 24 }, () => document.createElement('i')));
+  }
+  const hour = new Date().getHours();
+  barHeights(counts).forEach((h, i) => {
+    const bar = wrap.children[i];
+    bar.style.height = `${Math.max(h, 6)}%`;
+    bar.classList.toggle('on', counts[i] > 0);
+    bar.classList.toggle('now', i === hour);
+  });
+}
 
 function el(tag, className, text) {
   const node = document.createElement(tag);
@@ -110,6 +133,7 @@ function connect() {
   };
 }
 renderSessions([]);
+drawBars(new Array(24).fill(0));
 connect();
 
 $('arm').addEventListener('click', async () => {

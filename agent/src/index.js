@@ -18,7 +18,7 @@ const server = createServer({ token, bus, sessions });
 
 startMetrics(bus, cfg.metricsIntervalMs);
 startWeather(bus, cfg.weather);
-bus.publish('claude', { sessions: [], last: null });
+bus.publish('claude', { sessions: [], activity: sessions.activity(), last: null });
 
 server.listen(cfg.port, cfg.host, () => {
   console.log('deskpanel listo\n');
