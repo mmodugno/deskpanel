@@ -31,3 +31,20 @@ test('readToken: prioriza la URL sobre lo guardado', () => {
 test('formatTime: 24 h con dos dígitos', () => {
   assert.match(formatTime(new Date(2026, 10, 15, 9, 5)), /^09:05$/);
 });
+
+import { greetingFor, isNight, arcDash } from '../../panel/format.js';
+
+test('saludo y modo noche según la hora', () => {
+  assert.equal(greetingFor(8), 'Buen día');
+  assert.equal(greetingFor(15), 'Buenas tardes');
+  assert.equal(greetingFor(2), 'Buenas noches');
+  assert.ok(isNight(23) && isNight(3));
+  assert.ok(!isNight(7) && !isNight(22));
+});
+
+test('arcDash: 270° de recorrido y valores acotados', () => {
+  assert.equal(arcDash(0), '0.0 100');
+  assert.equal(arcDash(100), '75.0 100');
+  assert.equal(arcDash(200), '75.0 100');
+  assert.equal(arcDash(-5), '0.0 100');
+});

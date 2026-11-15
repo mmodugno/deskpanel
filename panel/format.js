@@ -31,3 +31,22 @@ export function readToken(search, stored) {
   const fromUrl = new URLSearchParams(search).get('token');
   return fromUrl || stored || null;
 }
+
+export function greetingFor(hour) {
+  if (hour >= 6 && hour < 12) return 'Buen día';
+  if (hour >= 12 && hour < 20) return 'Buenas tardes';
+  return 'Buenas noches';
+}
+
+// De noche el panel baja el brillo para no iluminar el cuarto.
+export function isNight(hour) {
+  return hour >= 23 || hour < 7;
+}
+
+export const STATE_LABEL = { working: 'trabajando', waiting: 'te necesita', done: 'terminó' };
+
+// El anillo de CPU es un arco de 270°: 100% de uso = 75 de 100 del perímetro.
+export function arcDash(percent) {
+  const p = Math.max(0, Math.min(100, percent));
+  return `${(p * 0.75).toFixed(1)} 100`;
+}
