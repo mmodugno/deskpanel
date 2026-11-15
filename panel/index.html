@@ -23,12 +23,24 @@
     </div>
   </header>
 
-  <main class="board">
+  <div id="pages" class="pages">
+    <main class="page board" id="page-home" aria-label="Inicio">
     <section class="card clock" aria-label="Hora">
       <div id="time" class="time">--:--</div>
       <div id="date" class="date"></div>
     </section>
 
+    <section id="weatherCell" class="card weather" aria-label="Clima">
+      <div class="label" id="weatherText">Clima sin configurar</div>
+      <div id="weatherTemp" class="big">--°</div>
+    </section>
+    <section class="card claude" aria-label="Sesiones de Claude Code">
+      <div class="label">Claude Code</div>
+      <ul id="sessions" class="sessions"></ul>
+    </section>
+
+    </main>
+    <main class="page board" id="page-system" aria-label="Sistema">
     <section class="card gauge" aria-label="Procesador">
       <div class="ring">
         <svg viewBox="0 0 120 120" role="img" aria-label="Uso de CPU">
@@ -43,6 +55,7 @@
         <div class="ring-text"><span id="cpuValue">--</span><small>%</small></div>
       </div>
       <div class="label">Procesador</div>
+      <div id="cpuRange" class="sub"></div>
     </section>
 
     <section class="card mem" aria-label="Memoria">
@@ -50,6 +63,13 @@
       <div id="memBig" class="big">--<small>%</small></div>
       <div class="meter"><div id="memFill" class="fill"></div></div>
       <div id="memText" class="sub">-- / -- GB</div>
+      <svg id="memSpark" class="spark" viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true"><path id="memSparkPath"/></svg>
+    </section>
+
+    <section class="card uptime" aria-label="Tiempo encendida">
+      <div class="label">Encendida hace</div>
+      <div id="uptimeBig" class="big">--</div>
+      <div id="hostSub" class="sub"></div>
     </section>
 
     <section class="card chart" aria-label="Historial de uso">
@@ -75,16 +95,9 @@
       <div class="hours"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>23h</span></div>
     </section>
 
-    <section class="card claude" aria-label="Sesiones de Claude Code">
-      <div class="label">Claude Code</div>
-      <ul id="sessions" class="sessions"></ul>
-    </section>
-
-    <section id="weatherCell" class="card weather" aria-label="Clima" hidden>
-      <div class="label" id="weatherText"></div>
-      <div id="weatherTemp" class="big"></div>
-    </section>
-  </main>
+    </main>
+  </div>
+  <nav id="dots" class="dots" aria-label="Páginas"><button type="button" aria-label="Inicio" class="on"></button><button type="button" aria-label="Sistema"></button></nav>
 
   <div id="perm" class="perm" role="alertdialog" aria-modal="true" aria-labelledby="permTitle" hidden>
     <div class="perm-card">

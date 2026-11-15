@@ -3,12 +3,16 @@
 [![CI](https://github.com/mmodugno/deskpanel/actions/workflows/ci.yml/badge.svg)](https://github.com/mmodugno/deskpanel/actions/workflows/ci.yml)
 ![license](https://img.shields.io/badge/license-MIT-blue)
 
-Convertí un celular o una tablet vieja en un panel de escritorio para tu PC: reloj, CPU, memoria, clima y el estado de tus sesiones de **Claude Code** (te avisa con sonido y vibración cuando una te pide permiso o termina).
+Convertí un celular o una tablet vieja en un panel de escritorio para tu PC: reloj, clima, CPU y memoria con gráficos en vivo, y el estado de tus sesiones de **Claude Code**. Cuando una te pide permiso, el panel muestra el comando y lo aprobás o denegás con un toque; también avisa con sonido y vibración cuando termina.
 Todo por la red local o por cable USB, **sin nube y sin cuentas**.
 
 <p>
-  <img src="docs/tablet.png" alt="Panel en una tablet" width="62%">
-  <img src="docs/phone.png" alt="Panel en un celular" width="22%">
+  <img src="docs/inicio.png" alt="Página de inicio en una tablet" width="49%">
+  <img src="docs/sistema.png" alt="Página de sistema con gráficos en vivo" width="49%">
+</p>
+<p>
+  <img src="docs/permiso.png" alt="Pedido de permiso de Claude Code con Permitir y Denegar" width="49%">
+  <img src="docs/celular.png" alt="Panel en un celular" width="19%">
 </p>
 <sub>Capturas con datos de prueba.</sub>
 
@@ -58,7 +62,7 @@ Creá `config.local.json` (está en `.gitignore`, tu ubicación no se sube):
 
 ### Claude Code
 
-Mirá [docs/claude-code.md](docs/claude-code.md) para conectar los hooks.
+Mirá [docs/claude-code.md](docs/claude-code.md) para conectar los hooks (estado de sesiones y aprobación de permisos desde el panel).
 
 ## Tests
 
@@ -66,11 +70,11 @@ Mirá [docs/claude-code.md](docs/claude-code.md) para conectar los hooks.
 npm test
 ```
 
-27 tests con `node --test` (token, métricas, sesiones, clima con fetch simulado, servidor HTTP, SSE y funciones del panel). El CI corre en Ubuntu y Windows con Node 20 y 22.
+38 tests con `node --test` (token, métricas, sesiones, clima con fetch simulado, servidor HTTP, SSE y funciones del panel). El CI corre en Ubuntu y Windows con Node 20 y 22.
 
 ## Estado y pendientes
 
-- [x] Agente, panel, alertas, modo USB, gráficos en vivo, temas, modo demo, tests y CI
+- [x] Agente, panel, alertas, modo USB, gráficos en vivo, 4 temas con fondo animado, páginas deslizables, aprobar permisos desde el panel, modo demo, tests y CI
 - [ ] Widget de música sonando en Windows
 - [ ] Widget de cuotas de uso
 - [ ] Probado en Windows real (hoy el desarrollo corrió en Linux; el CI cubre Windows)

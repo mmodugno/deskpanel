@@ -83,3 +83,29 @@ test('temas: ciclo completo y valor desconocido cae en el primero', () => {
   assert.equal(themeName('orquidea'), 'Orquídea');
   assert.equal(themeName('raro'), 'Violeta');
 });
+
+import { timeLeft, permissionTitle } from '../../panel/format.js';
+
+test('timeLeft: fracción restante acotada de 0 a 1', () => {
+  const p = { since: 0, expiresAt: 100 };
+  assert.equal(timeLeft(p, 25), 0.75);
+  assert.equal(timeLeft(p, 500), 0);
+  assert.equal(timeLeft(p, -50), 1);
+  assert.equal(timeLeft({ since: 5, expiresAt: 5 }, 5), 0);
+  assert.equal(permissionTitle({ tool: 'Bash', project: 'app' }), 'Bash · app');
+});
+
+import { formatUptime, rangeText } from '../../panel/format.js';
+
+test('formatUptime: minutos, horas y días', () => {
+  assert.equal(formatUptime(0), 'menos de 1 min');
+  assert.equal(formatUptime(45), '45 min');
+  assert.equal(formatUptime(125), '2 h 5 min');
+  assert.equal(formatUptime(3000), '2 d 2 h');
+  assert.equal(formatUptime(undefined), 'menos de 1 min');
+});
+
+test('rangeText: mínimo y máximo del historial', () => {
+  assert.equal(rangeText([10, 40, 25]), 'mín 10% · máx 40%');
+  assert.equal(rangeText([]), '');
+});
