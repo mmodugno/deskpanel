@@ -3,9 +3,14 @@ import { arm, notify } from './alerts.js';
 import { startDemo } from './demo.js';
 
 const $ = (id) => document.getElementById(id);
-const token = readToken(location.search, localStorage.getItem('deskpanel.token'));
+// El almacenamiento puede estar bloqueado (modo privado, iframes): no debe romper el panel.
+const store = {
+  get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
+  set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
+};
+const token = readToken(location.search, store.get('deskpanel.token'));
 if (token) {
-  localStorage.setItem('deskpanel.token', token);
+  store.set('deskpanel.token', token);
   history.replaceState(null, '', location.pathname); // el token no queda en la barra
 }
 
