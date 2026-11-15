@@ -64,7 +64,7 @@ Mirá [docs/claude-code.md](docs/claude-code.md) para conectar los hooks.
 npm test
 ```
 
-19 tests con `node --test` (token, métricas, sesiones, clima con fetch simulado, servidor HTTP, SSE y funciones del panel). El CI corre en Ubuntu y Windows con Node 20 y 22.
+21 tests con `node --test` (token, métricas, sesiones, clima con fetch simulado, servidor HTTP, SSE y funciones del panel). El CI corre en Ubuntu y Windows con Node 20 y 22.
 
 ## Estado y pendientes
 
