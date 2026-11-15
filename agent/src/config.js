@@ -4,6 +4,7 @@ export const DEFAULTS = {
   port: 4747,
   host: '0.0.0.0',
   metricsIntervalMs: 2000,
+  permissionTimeoutMs: 110000, // pasado este tiempo, Claude Code vuelve a preguntar en la terminal
   weather: null, // { latitude, longitude, name } — solo en config.local.json
 };
 

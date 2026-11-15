@@ -3,6 +3,7 @@ import { createToken } from './auth.js';
 import { createBus } from './bus.js';
 import { createSessions } from './claude-sessions.js';
 import { createServer } from './server.js';
+import { createPermissions } from './permissions.js';
 import { startMetrics } from './metrics.js';
 import { startWeather } from './weather.js';
 import { lanAddresses } from './network.js';
@@ -14,10 +15,15 @@ if (usb) cfg.host = '127.0.0.1'; // solo local: el celular entra por adb reverse
 const token = process.env.DESKPANEL_TOKEN || createToken();
 const bus = createBus();
 const sessions = createSessions();
-const server = createServer({ token, bus, sessions });
+const permissions = createPermissions({
+  timeoutMs: cfg.permissionTimeoutMs,
+  onChange: (pending) => bus.publish('permissions', { pending }),
+});
+const server = createServer({ token, bus, sessions, permissions });
 
 startMetrics(bus, cfg.metricsIntervalMs);
 startWeather(bus, cfg.weather);
+bus.publish('permissions', { pending: [] });
 bus.publish('claude', { sessions: [], activity: sessions.activity(), last: null });
 
 server.listen(cfg.port, cfg.host, () => {

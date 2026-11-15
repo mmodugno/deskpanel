@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { extname, join, normalize, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { extractToken, tokenMatches } from './auth.js';
+import { hookOutput } from './permissions.js';
 
 const PANEL_DIR = resolve(fileURLToPath(new URL('../../panel', import.meta.url)));
 const TYPES = {
@@ -31,7 +32,7 @@ function readBody(req) {
   });
 }
 
-export function createServer({ token, bus, sessions }) {
+export function createServer({ token, bus, sessions, permissions }) {
   return http.createServer(async (req, res) => {
     const url = new URL(req.url, 'http://localhost');
     const json = (status, body) => {
@@ -81,6 +82,31 @@ export function createServer({ token, bus, sessions }) {
       if (!result) return json(202, { ignored: true });
       bus.publish('claude', { sessions: sessions.list(), activity: sessions.activity(), last: result });
       return json(200, { ok: true });
+    }
+    if (req.method === 'POST' && url.pathname === '/api/permission') {
+      let payload;
+      try {
+        payload = JSON.parse(await readBody(req));
+      } catch {
+        return json(400, { error: 'json-invalido' });
+      }
+      const { id, promise } = permissions.request(payload);
+      res.on('close', () => permissions.cancel(id)); // el hook se cortó: se limpia
+      const decision = await promise;
+      if (res.writableEnded || res.destroyed) return;
+      // Sin respuesta a tiempo: {} deja que Claude Code pregunte en la terminal.
+      return json(200, decision ? hookOutput(decision) : {});
+    }
+    if (req.method === 'POST' && url.pathname === '/api/permission/answer') {
+      let body;
+      try {
+        body = JSON.parse(await readBody(req));
+      } catch {
+        return json(400, { error: 'json-invalido' });
+      }
+      return permissions.answer(body?.id, body?.behavior)
+        ? json(200, { ok: true })
+        : json(404, { error: 'no-pendiente' });
     }
     return json(404, { error: 'not-found' });
   });
