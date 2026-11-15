@@ -58,3 +58,18 @@ test('demo: la CPU se mantiene acotada y el ciclo de estados vuelve a empezar', 
   assert.equal(nextState('waiting'), 'done');
   assert.equal(nextState('done'), 'working');
 });
+
+import { sparkPath, barHeights } from '../../panel/format.js';
+
+test('sparkPath: curva y área, vacío con pocos datos y valores acotados', () => {
+  assert.deepEqual(sparkPath([5], 100, 50), { line: '', area: '' });
+  const { line, area } = sparkPath([0, 100, 50], 100, 50);
+  assert.match(line, /^M0\.0 50\.0 C/);
+  assert.ok(area.endsWith('L100 50 L0 50 Z'));
+  assert.equal(sparkPath([0, 500], 10, 10).line.includes('-'), false, 'no se sale del cuadro');
+});
+
+test('barHeights: normaliza a la hora más activa', () => {
+  assert.deepEqual(barHeights([0, 2, 4]), [0, 50, 100]);
+  assert.deepEqual(barHeights([0, 0]), [0, 0]);
+});
