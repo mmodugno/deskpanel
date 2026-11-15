@@ -3,10 +3,11 @@ import assert from 'node:assert/strict';
 import { createServer } from '../src/server.js';
 import { createBus } from '../src/bus.js';
 import { createSessions } from '../src/claude-sessions.js';
+import { createPermissions } from '../src/permissions.js';
 
 async function start() {
   const bus = createBus();
-  const server = createServer({ token: 't0k', bus, sessions: createSessions() });
+  const server = createServer({ token: 't0k', bus, sessions: createSessions(), permissions: createPermissions() });
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
   const base = `http://127.0.0.1:${server.address().port}`;
   return { bus, base, close: () => { bus.closeAll(); server.closeAllConnections(); server.close(); } };
