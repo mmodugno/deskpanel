@@ -4,6 +4,7 @@ import { createBus } from './bus.js';
 import { createSessions } from './claude-sessions.js';
 import { createServer } from './server.js';
 import { createPermissions } from './permissions.js';
+import { startFocus } from './focus.js';
 import { startMetrics } from './metrics.js';
 import { startWeather } from './weather.js';
 import { lanAddresses } from './network.js';
@@ -19,7 +20,8 @@ const permissions = createPermissions({
   timeoutMs: cfg.permissionTimeoutMs,
   onChange: (pending) => bus.publish('permissions', { pending }),
 });
-const server = createServer({ token, bus, sessions, permissions });
+const focus = startFocus(bus, cfg.focus);
+const server = createServer({ token, bus, sessions, permissions, focus });
 
 startMetrics(bus, cfg.metricsIntervalMs);
 startWeather(bus, cfg.weather);

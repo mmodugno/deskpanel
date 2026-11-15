@@ -5,6 +5,7 @@ export const DEFAULTS = {
   host: '0.0.0.0',
   metricsIntervalMs: 2000,
   permissionTimeoutMs: 110000, // pasado este tiempo, Claude Code vuelve a preguntar en la terminal
+  focus: {}, // { workMin, breakMin, longBreakMin, cycles }
   weather: null, // { latitude, longitude, name } — solo en config.local.json
 };
 

@@ -32,7 +32,7 @@ function readBody(req) {
   });
 }
 
-export function createServer({ token, bus, sessions, permissions }) {
+export function createServer({ token, bus, sessions, permissions, focus, media }) {
   return http.createServer(async (req, res) => {
     const url = new URL(req.url, 'http://localhost');
     const json = (status, body) => {
@@ -96,6 +96,25 @@ export function createServer({ token, bus, sessions, permissions }) {
       if (res.writableEnded || res.destroyed) return;
       // Sin respuesta a tiempo: {} deja que Claude Code pregunte en la terminal.
       return json(200, decision ? hookOutput(decision) : {});
+    }
+    if (req.method === 'POST' && url.pathname === '/api/focus' && focus) {
+      let body;
+      try {
+        body = JSON.parse(await readBody(req));
+      } catch {
+        return json(400, { error: 'json-invalido' });
+      }
+      return focus.act(body?.action) ? json(200, { ok: true }) : json(400, { error: 'accion-invalida' });
+    }
+    if (req.method === 'POST' && url.pathname === '/api/media' && media) {
+      let body;
+      try {
+        body = JSON.parse(await readBody(req));
+      } catch {
+        return json(400, { error: 'json-invalido' });
+      }
+      const ok = await media.control(body?.action);
+      return ok ? json(200, { ok: true }) : json(400, { error: 'accion-invalida' });
     }
     if (req.method === 'POST' && url.pathname === '/api/permission/answer') {
       let body;
