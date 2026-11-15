@@ -1,4 +1,5 @@
-import { formatTime, formatDate, formatSince, isHot, alertFor, readToken, greetingFor, isNight, STATE_LABEL, arcDash, sparkPath, barHeights, THEMES, nextTheme, themeName, timeLeft, permissionTitle, formatUptime, rangeText } from './format.js';
+import { formatTime, formatDate, formatSince, isHot, alertFor, readToken, greetingFor, isNight, STATE_LABEL, arcDash, sparkPath, barHeights, THEMES, nextTheme, themeName, timeLeft, permissionTitle, formatUptime, rangeText,
+  PHASE_LABEL, focusRemaining, clockMs, focusProgress, primaryLabel, eventTime, relativeStart, CI_LABEL, prLabel } from './format.js';
 import { arm, notify } from './alerts.js';
 import { startDemo } from './demo.js';
 
@@ -60,6 +61,30 @@ const handlers = {
     $('weatherTemp').textContent = `${d.temp}°`;
     $('weatherText').textContent = [d.name, d.text].filter(Boolean).join(' · ');
   },
+  focus(d) {
+    const first = focusState === null;
+    if (!first && d.transitions > focusState.transitions) notify('focus', $('flash'));
+    focusState = d;
+    renderFocus();
+  },
+  media(d) {
+    const idle = !d.title;
+    const box = $('musicTitle').closest('.music');
+    box.dataset.idle = String(idle);
+    box.dataset.playing = String(!!d.playing);
+    $('musicTitle').textContent = idle ? 'Nada sonando' : d.title;
+    $('musicArtist').textContent = idle ? '' : [d.artist, d.album].filter(Boolean).join(' · ');
+    $('mPlayIcon').innerHTML = d.playing
+      ? '<path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/>'
+      : '<path d="M8 5v14l11-7z" fill="currentColor"/>';
+  },
+  calendar(d) {
+    calendarEvents = d.events;
+    renderCalendar();
+  },
+  github(d) {
+    renderRepos(d.repos);
+  },
   permissions(d) {
     const seen = new Set(shownPermissions);
     renderPermission(d.pending);
@@ -75,20 +100,18 @@ const handlers = {
 };
 let firstClaudeEvent = true; // el estado inicial al conectar no dispara alertas
 
+let focusState = null;
+let calendarEvents = null;
 let shownPermissions = [];
 let currentPerm = null;
 
-async function decide(id, behavior) {
+async function api(path, body) {
   try {
-    if (demoCtl) demoCtl.decide(id, behavior);
-    else {
-      await fetch(`/api/permission/answer?token=${encodeURIComponent(token)}`, {
-        method: 'POST',
-        body: JSON.stringify({ id, behavior }),
-      });
-    }
+    if (demoCtl) return demoCtl.api(path, body);
+    await fetch(`/api/${path}?token=${encodeURIComponent(token)}`, { method: 'POST', body: JSON.stringify(body) });
   } catch {}
 }
+const decide = (id, behavior) => api('permission/answer', { id, behavior });
 
 function renderPermission(pending) {
   shownPermissions = pending.map((p) => p.id);
@@ -107,6 +130,67 @@ setInterval(() => {
 }, 250);
 $('permAllow').addEventListener('click', () => currentPerm && decide(currentPerm.id, 'allow'));
 $('permDeny').addEventListener('click', () => currentPerm && decide(currentPerm.id, 'deny'));
+
+function renderFocus() {
+  const f = focusState;
+  if (!f) return;
+  const now = Date.now();
+  $('focusTime').textContent = clockMs(focusRemaining(f, now));
+  $('focusArc').style.strokeDasharray = `${(focusProgress(f, now) * 100).toFixed(1)} 100`;
+  $('phaseLabel').textContent = PHASE_LABEL[f.phase] ?? f.phase;
+  $('focusPrimary').textContent = primaryLabel(f, now);
+  $('focusToday').textContent = `Hoy: ${f.today} ${f.today === 1 ? 'pomodoro' : 'pomodoros'}`;
+  $('focusPrimary').closest('.focus').dataset.phase = f.phase;
+  const dotsEl = $('focusDots');
+  const total = f.config?.cycles ?? 4;
+  if (dotsEl.children.length !== total) dotsEl.replaceChildren(...Array.from({ length: total }, () => document.createElement('i')));
+  [...dotsEl.children].forEach((d, i) => d.classList.toggle('on', i < f.cycle));
+}
+setInterval(renderFocus, 250);
+$('focusPrimary').addEventListener('click', () => api('focus', { action: focusState?.running ? 'pause' : 'start' }));
+$('focusReset').addEventListener('click', () => api('focus', { action: 'reset' }));
+$('focusSkip').addEventListener('click', () => api('focus', { action: 'skip' }));
+$('mPrev').addEventListener('click', () => api('media', { action: 'previous' }));
+$('mPlay').addEventListener('click', () => api('media', { action: 'play-pause' }));
+$('mNext').addEventListener('click', () => api('media', { action: 'next' }));
+
+function renderCalendar() {
+  if (!calendarEvents) return;
+  const main = $('calMain');
+  const more = $('calMore');
+  main.replaceChildren();
+  more.replaceChildren();
+  const now = Date.now();
+  const upcoming = calendarEvents.filter((e) => e.end >= now);
+  if (!upcoming.length) {
+    main.append(el('div', 'empty', 'Sin eventos próximos'));
+    return;
+  }
+  const [first, ...rest] = upcoming;
+  main.append(el('div', 'cal-title', first.title), el('div', 'cal-when', `${relativeStart(first, now)} · ${eventTime(first)}`));
+  for (const e of rest.slice(0, 3)) {
+    const li = el('li');
+    li.append(el('span', '', e.title), el('span', '', `${relativeStart(e, now)} · ${eventTime(e)}`));
+    more.append(li);
+  }
+}
+setInterval(renderCalendar, 30000);
+
+function renderRepos(repos) {
+  const ul = $('repos');
+  ul.replaceChildren();
+  if (!repos.length) {
+    ul.append(el('li', 'empty', 'Sumá tus repos en config.local.json'));
+    return;
+  }
+  for (const r of repos) {
+    const li = el('li', 'repo');
+    li.dataset.ci = r.ci;
+    li.append(document.createElement('i'), el('span', 'repo-name', r.repo), el('span', `repo-prs${r.prs ? '' : ' zero'}`, prLabel(r.prs)));
+    li.append(el('span', 'repo-ci', [CI_LABEL[r.ci] ?? r.ci, r.branch].filter(Boolean).join(' · ')));
+    ul.append(li);
+  }
+}
 
 function drawChart(hist) {
   const cpu = sparkPath(hist.cpu, 300, 100);

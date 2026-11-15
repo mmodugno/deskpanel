@@ -120,3 +120,63 @@ export function rangeText(values) {
   if (!values?.length) return '';
   return `mín ${Math.min(...values)}% · máx ${Math.max(...values)}%`;
 }
+
+// ---- Foco ----
+export const PHASE_LABEL = { work: 'Enfocada', break: 'Descanso', longbreak: 'Descanso largo' };
+
+export function focusRemaining(f, now) {
+  return f.running ? Math.max(0, f.endsAt - now) : f.remainingMs;
+}
+
+export function clockMs(ms) {
+  const total = Math.ceil(Math.max(0, ms) / 1000);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+// Cuánto de la fase ya pasó (0 a 1), para el anillo.
+export function focusProgress(f, now) {
+  if (!f.totalMs) return 0;
+  return Math.max(0, Math.min(1, 1 - focusRemaining(f, now) / f.totalMs));
+}
+
+export function primaryLabel(f, now) {
+  if (f.running) return 'Pausar';
+  return focusRemaining(f, now) < f.totalMs ? 'Seguir' : 'Iniciar';
+}
+
+// ---- Calendario ----
+export function eventTime(ev) {
+  if (ev.allDay) return 'Todo el día';
+  return new Date(ev.start).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+
+export function relativeStart(ev, now) {
+  if (ev.allDay) {
+    const days = Math.round((new Date(ev.start).setHours(0, 0, 0, 0) - new Date(now).setHours(0, 0, 0, 0)) / 86400000);
+    return days <= 0 ? 'hoy' : days === 1 ? 'mañana' : new Date(ev.start).toLocaleDateString('es-AR', { weekday: 'long' });
+  }
+  if (ev.start <= now && ev.end > now) return 'en curso';
+  const min = Math.round((ev.start - now) / 60000);
+  if (min < 1) return 'ahora';
+  if (min < 60) return `en ${min} min`;
+  const days = Math.round((new Date(ev.start).setHours(0, 0, 0, 0) - new Date(now).setHours(0, 0, 0, 0)) / 86400000);
+  if (days <= 0) return `en ${Math.floor(min / 60)} h`;
+  if (days === 1) return 'mañana';
+  return new Date(ev.start).toLocaleDateString('es-AR', { weekday: 'long' });
+}
+
+// ---- GitHub ----
+export const CI_LABEL = {
+  success: 'CI ok',
+  failure: 'CI falló',
+  running: 'corriendo',
+  none: 'sin CI',
+  other: 'CI cancelado',
+  error: 'sin datos',
+};
+
+export function prLabel(n) {
+  return n === 1 ? '1 PR' : `${n} PRs`;
+}

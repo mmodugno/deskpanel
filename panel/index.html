@@ -34,6 +34,12 @@
       <div class="label" id="weatherText">Clima sin configurar</div>
       <div id="weatherTemp" class="big">--°</div>
     </section>
+    <section class="card calendar" aria-label="Próximo evento">
+      <div class="label">Próximo</div>
+      <div id="calMain" class="cal-main"><div class="empty">Calendario sin configurar</div></div>
+      <ul id="calMore" class="cal-more"></ul>
+    </section>
+
     <section class="card claude" aria-label="Sesiones de Claude Code">
       <div class="label">Claude Code</div>
       <ul id="sessions" class="sessions"></ul>
@@ -96,8 +102,55 @@
     </section>
 
     </main>
+    <main class="page board" id="page-focus" aria-label="Foco">
+    <section class="card focus" aria-label="Temporizador de foco">
+      <div class="label" id="phaseLabel">Enfocada</div>
+      <div class="focus-body">
+        <div class="ring focus-ring">
+          <svg viewBox="0 0 120 120" role="img" aria-label="Progreso del pomodoro">
+            <circle class="track full" cx="60" cy="60" r="50"/>
+            <circle id="focusArc" class="arc full" cx="60" cy="60" r="50" pathLength="100"/>
+          </svg>
+          <div id="focusTime" class="focus-time">25:00</div>
+        </div>
+        <div class="focus-side">
+          <div id="focusDots" class="focus-dots" aria-hidden="true"></div>
+          <div id="focusToday" class="sub">Hoy: 0 pomodoros</div>
+          <div class="focus-actions">
+            <button id="focusPrimary" class="btn allow" type="button">Iniciar</button>
+            <div class="focus-secondary">
+              <button id="focusReset" class="btn soft" type="button">Reiniciar</button>
+              <button id="focusSkip" class="btn soft" type="button">Saltar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card music" aria-label="Música">
+      <div class="label">Ahora suena</div>
+      <div class="music-body">
+        <div class="art" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor"/><circle cx="16.5" cy="16" r="2.5" fill="currentColor"/></svg></div>
+        <div class="music-info">
+          <div id="musicTitle" class="music-title">Nada sonando</div>
+          <div id="musicArtist" class="sub"></div>
+        </div>
+      </div>
+      <div class="music-controls">
+        <button class="round" id="mPrev" type="button" aria-label="Anterior"><svg viewBox="0 0 24 24"><path d="M6 6v12M19 6l-10 6 10 6z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+        <button class="round big" id="mPlay" type="button" aria-label="Reproducir o pausar"><svg viewBox="0 0 24 24" id="mPlayIcon"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button>
+        <button class="round" id="mNext" type="button" aria-label="Siguiente"><svg viewBox="0 0 24 24"><path d="M18 6v12M5 6l10 6-10 6z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+      </div>
+    </section>
+    </main>
+    <main class="page board" id="page-github" aria-label="GitHub">
+    <section class="card github" aria-label="Repositorios">
+      <div class="label">GitHub</div>
+      <ul id="repos" class="repos"><li class="empty">Sumá tus repos en config.local.json</li></ul>
+    </section>
+    </main>
   </div>
-  <nav id="dots" class="dots" aria-label="Páginas"><button type="button" aria-label="Inicio" class="on"></button><button type="button" aria-label="Sistema"></button></nav>
+  <nav id="dots" class="dots" aria-label="Páginas"><button type="button" aria-label="Inicio" class="on"></button><button type="button" aria-label="Sistema"></button><button type="button" aria-label="Foco"></button><button type="button" aria-label="GitHub"></button></nav>
 
   <div id="perm" class="perm" role="alertdialog" aria-modal="true" aria-labelledby="permTitle" hidden>
     <div class="perm-card">
