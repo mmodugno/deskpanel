@@ -26,7 +26,7 @@ body {
 .link[data-state="error"] { color: var(--red); }
 
 .board {
-  flex: 1; min-height: 0;
+  flex: 1; min-height: 0; overflow-y: auto;
   display: grid; gap: 10px; padding: 0 10px 10px;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   grid-auto-rows: minmax(120px, 1fr);
@@ -37,7 +37,8 @@ body {
 
 .clock { grid-column: span 2; }
 .time { font-size: clamp(56px, 14vw, 140px); line-height: 1; color: var(--amber); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
-.date { margin-top: 8px; color: var(--dim); text-transform: capitalize; }
+.date { margin-top: 8px; color: var(--dim); }
+.date::first-letter { text-transform: uppercase; }
 
 .gauge { align-items: center; }
 .gauge svg { width: min(100%, 220px); }
@@ -51,7 +52,7 @@ body {
 .fill { height: 100%; width: 0; background: var(--amber); transition: width .6s ease; }
 .mem-text { font-variant-numeric: tabular-nums; }
 
-.claude { grid-column: span 2; justify-content: flex-start; }
+.claude { grid-column: span 2; justify-content: flex-start; min-height: 160px; }
 .sessions { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; overflow: auto; }
 .sessions li { display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: center; }
 .sessions .empty { color: var(--dim); display: block; }
