@@ -7,6 +7,7 @@ import { createPermissions } from './permissions.js';
 import { startFocus } from './focus.js';
 import { startGithub } from './github.js';
 import { startCalendar } from './calendar.js';
+import { createMedia, startMedia } from './media.js';
 import { startMetrics } from './metrics.js';
 import { startWeather } from './weather.js';
 import { lanAddresses } from './network.js';
@@ -23,7 +24,9 @@ const permissions = createPermissions({
   onChange: (pending) => bus.publish('permissions', { pending }),
 });
 const focus = startFocus(bus, cfg.focus);
-const server = createServer({ token, bus, sessions, permissions, focus });
+const media = createMedia();
+startMedia(bus, media);
+const server = createServer({ token, bus, sessions, permissions, focus, media });
 
 startMetrics(bus, cfg.metricsIntervalMs);
 startWeather(bus, cfg.weather);
