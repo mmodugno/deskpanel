@@ -1,5 +1,5 @@
 // Cachea solo el cascarón del panel; los datos en vivo nunca se cachean.
-const CACHE = 'deskpanel-v2';
+const CACHE = 'deskpanel-v3';
 const SHELL = ['./', 'style.css', 'app.js', 'format.js', 'alerts.js', 'demo.js', 'icon.svg', 'manifest.webmanifest'];
 
 self.addEventListener('install', (e) => e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL))));
