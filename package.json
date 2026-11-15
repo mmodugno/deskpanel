@@ -1,0 +1,12 @@
+{
+  "name": "deskpanel",
+  "version": "0.1.0",
+  "description": "Convertí un celular o tablet viejo en un panel de escritorio para tu PC, por Wi-Fi local y sin nube.",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node agent/src/index.js",
+    "test": "node --test agent/test/"
+  }
+}
