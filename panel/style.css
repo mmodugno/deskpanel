@@ -164,3 +164,22 @@ body.night { filter: brightness(.55) saturate(.85); }
 .bar-right { display: flex; gap: 8px; }
 #g1 .g-a { stop-color: var(--violet); }
 #g1 .g-b { stop-color: var(--orchid); }
+
+.perm { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 18px; background: rgba(8, 4, 20, .78); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: fadein .25s ease-out; }
+.perm[hidden] { display: none; }
+@keyframes fadein { from { opacity: 0; } }
+.perm-card { width: min(680px, 100%); max-height: 100%; overflow: auto; background: linear-gradient(160deg, rgba(48, 30, 92, .95), rgba(24, 14, 52, .95)); border: 1px solid rgba(255, 143, 163, .5); border-radius: 26px; padding: 24px; box-shadow: 0 0 60px rgba(255, 143, 163, .18), 0 24px 60px rgba(0, 0, 0, .5); animation: rise .35s cubic-bezier(.2, .8, .2, 1); }
+@keyframes rise { from { transform: translateY(24px) scale(.97); opacity: 0; } }
+.perm-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.perm-badge { color: var(--warn); font-size: 13px; font-weight: 600; letter-spacing: .04em; }
+.perm-count { background: rgba(255, 143, 163, .18); color: var(--warn); border-radius: 99px; padding: 3px 10px; font-size: 12px; }
+.perm-title { margin: 10px 0 12px; font-size: clamp(22px, 5vw, 30px); font-weight: 600; letter-spacing: -.01em; }
+.perm-detail { margin: 0; padding: 14px 16px; background: rgba(8, 4, 20, .6); border-radius: 14px; color: var(--orchid); font: 14px/1.5 ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-all; max-height: 34vh; overflow: auto; }
+.perm-detail:empty { display: none; }
+.perm-timer { height: 4px; border-radius: 99px; background: rgba(167, 139, 250, .15); margin: 16px 0; overflow: hidden; }
+.perm-timer div { height: 100%; width: 100%; background: linear-gradient(90deg, var(--warn), var(--lilac)); transform-origin: left; }
+.perm-actions { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; }
+.btn { min-height: 62px; border-radius: 18px; border: 0; font: inherit; font-size: 19px; font-weight: 600; cursor: pointer; }
+.btn.deny { background: rgba(255, 143, 163, .14); color: var(--warn); border: 1px solid rgba(255, 143, 163, .4); }
+.btn.allow { background: linear-gradient(135deg, #6ee7b7, #34d399); color: #052e1f; box-shadow: 0 8px 24px rgba(52, 211, 153, .3); }
+.btn:active { transform: scale(.98); }

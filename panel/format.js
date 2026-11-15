@@ -94,3 +94,14 @@ export function nextTheme(current) {
 export function themeName(id) {
   return (THEMES.find((t) => t.id === id) ?? THEMES[0]).name;
 }
+
+// Fracción (0-1) del tiempo que le queda a un permiso pendiente.
+export function timeLeft(perm, now) {
+  const total = perm.expiresAt - perm.since;
+  if (total <= 0) return 0;
+  return Math.max(0, Math.min(1, (perm.expiresAt - now) / total));
+}
+
+export function permissionTitle(perm) {
+  return `${perm.tool} · ${perm.project}`;
+}

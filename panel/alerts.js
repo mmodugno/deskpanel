@@ -38,7 +38,10 @@ function beep(freqs) {
 }
 
 export function notify(kind, flashEl) {
-  if (kind === 'waiting') {
+  if (kind === 'permission') {
+    beep([660, 880, 1046]);
+    navigator.vibrate?.([250, 80, 250, 80, 250]);
+  } else if (kind === 'waiting') {
     beep([660, 880, 660]);
     navigator.vibrate?.([200, 100, 200]);
     flashEl.classList.remove('on');

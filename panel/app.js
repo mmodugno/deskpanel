@@ -1,4 +1,4 @@
-import { formatTime, formatDate, formatSince, isHot, alertFor, readToken, greetingFor, isNight, STATE_LABEL, arcDash, sparkPath, barHeights, THEMES, nextTheme, themeName } from './format.js';
+import { formatTime, formatDate, formatSince, isHot, alertFor, readToken, greetingFor, isNight, STATE_LABEL, arcDash, sparkPath, barHeights, THEMES, nextTheme, themeName, timeLeft, permissionTitle } from './format.js';
 import { arm, notify } from './alerts.js';
 import { startDemo } from './demo.js';
 
@@ -55,6 +55,11 @@ const handlers = {
     $('weatherTemp').textContent = `${d.temp}°`;
     $('weatherText').textContent = [d.name, d.text].filter(Boolean).join(' · ');
   },
+  permissions(d) {
+    const seen = new Set(shownPermissions);
+    renderPermission(d.pending);
+    if (d.pending.some((p) => !seen.has(p.id))) notify('permission', $('flash'));
+  },
   claude(d) {
     renderSessions(d.sessions);
     if (d.activity) drawBars(d.activity);
@@ -64,6 +69,39 @@ const handlers = {
   },
 };
 let firstClaudeEvent = true; // el estado inicial al conectar no dispara alertas
+
+let shownPermissions = [];
+let currentPerm = null;
+
+async function decide(id, behavior) {
+  try {
+    if (demoCtl) demoCtl.decide(id, behavior);
+    else {
+      await fetch(`/api/permission/answer?token=${encodeURIComponent(token)}`, {
+        method: 'POST',
+        body: JSON.stringify({ id, behavior }),
+      });
+    }
+  } catch {}
+}
+
+function renderPermission(pending) {
+  shownPermissions = pending.map((p) => p.id);
+  currentPerm = pending[0] ?? null;
+  const box = $('perm');
+  box.hidden = !currentPerm;
+  if (!currentPerm) return;
+  $('permTitle').textContent = permissionTitle(currentPerm);
+  $('permDetail').textContent = currentPerm.detail;
+  $('permCount').hidden = pending.length < 2;
+  $('permCount').textContent = `+${pending.length - 1} más`;
+}
+
+setInterval(() => {
+  if (currentPerm) $('permTimer').style.transform = `scaleX(${timeLeft(currentPerm, Date.now())})`;
+}, 250);
+$('permAllow').addEventListener('click', () => currentPerm && decide(currentPerm.id, 'allow'));
+$('permDeny').addEventListener('click', () => currentPerm && decide(currentPerm.id, 'deny'));
 
 function drawChart(hist) {
   const cpu = sparkPath(hist.cpu, 300, 100);
@@ -122,13 +160,15 @@ function renderSessionAges() {
 }
 
 // Demo: con ?demo, o publicado en GitHub Pages (no hay agente ahí).
+let demoCtl = null;
 const demo = new URLSearchParams(location.search).has('demo') || location.hostname.endsWith('github.io');
 
 function connect() {
   if (demo) {
     setLink('ok', 'demo');
     firstClaudeEvent = false;
-    return startDemo(handlers);
+    demoCtl = startDemo(handlers);
+    return;
   }
   if (!token) return setLink('error', 'falta el token: abrí el link que imprime el agente');
   const es = new EventSource(`/api/stream?token=${encodeURIComponent(token)}`);

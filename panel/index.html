@@ -86,6 +86,22 @@
     </section>
   </main>
 
+  <div id="perm" class="perm" role="alertdialog" aria-modal="true" aria-labelledby="permTitle" hidden>
+    <div class="perm-card">
+      <div class="perm-head">
+        <span class="perm-badge">Claude Code necesita tu permiso</span>
+        <span id="permCount" class="perm-count" hidden></span>
+      </div>
+      <h2 id="permTitle" class="perm-title"></h2>
+      <pre id="permDetail" class="perm-detail"></pre>
+      <div class="perm-timer"><div id="permTimer"></div></div>
+      <div class="perm-actions">
+        <button id="permDeny" class="btn deny" type="button">Denegar</button>
+        <button id="permAllow" class="btn allow" type="button">Permitir</button>
+      </div>
+    </div>
+  </div>
+
   <button id="arm" class="arm" type="button">Tocá para activar el sonido y mantener la pantalla encendida</button>
   <div id="flash" class="flash" aria-hidden="true"></div>
   <script type="module" src="app.js"></script>

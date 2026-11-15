@@ -48,6 +48,26 @@ export function startDemo(handlers) {
   sendSystem();
   sendClaude();
   setInterval(sendSystem, 1500);
+
+  // Cada tanto aparece un pedido de permiso de mentira para probar los botones.
+  let pending = [];
+  const DEMO_COMMANDS = [
+    ['Bash', 'git push origin main --force-with-lease'],
+    ['Bash', 'npm install --save-dev playwright'],
+    ['Edit', 'src/engine/planner.js'],
+  ];
+  let n = 0;
+  const publish = () => handlers.permissions({ pending: [...pending] });
+  const ask = () => {
+    if (pending.length) return;
+    const [tool, detail] = DEMO_COMMANDS[n++ % DEMO_COMMANDS.length];
+    const since = Date.now();
+    pending.push({ id: `demo-${n}`, project: 'api-notas', tool, detail, since, expiresAt: since + 110000 });
+    publish();
+  };
+  publish();
+  setTimeout(ask, 6000);
+  setInterval(ask, 30000);
   setInterval(() => {
     const s = sessions[0];
     s.state = nextState(s.state);
@@ -56,4 +76,11 @@ export function startDemo(handlers) {
     if (s.state === 'working') activity[new Date().getHours()] += 1;
     sendClaude(true, s.state);
   }, 7000);
+
+  return {
+    decide(id) {
+      pending = pending.filter((p) => p.id !== id);
+      publish();
+    },
+  };
 }
