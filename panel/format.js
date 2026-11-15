@@ -105,3 +105,18 @@ export function timeLeft(perm, now) {
 export function permissionTitle(perm) {
   return `${perm.tool} · ${perm.project}`;
 }
+
+export function formatUptime(min) {
+  if (!Number.isFinite(min) || min < 1) return 'menos de 1 min';
+  const d = Math.floor(min / 1440);
+  const h = Math.floor((min % 1440) / 60);
+  const m = Math.floor(min % 60);
+  if (d > 0) return `${d} d ${h} h`;
+  if (h > 0) return `${h} h ${m} min`;
+  return `${m} min`;
+}
+
+export function rangeText(values) {
+  if (!values?.length) return '';
+  return `mín ${Math.min(...values)}% · máx ${Math.max(...values)}%`;
+}

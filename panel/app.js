@@ -1,4 +1,4 @@
-import { formatTime, formatDate, formatSince, isHot, alertFor, readToken, greetingFor, isNight, STATE_LABEL, arcDash, sparkPath, barHeights, THEMES, nextTheme, themeName, timeLeft, permissionTitle } from './format.js';
+import { formatTime, formatDate, formatSince, isHot, alertFor, readToken, greetingFor, isNight, STATE_LABEL, arcDash, sparkPath, barHeights, THEMES, nextTheme, themeName, timeLeft, permissionTitle, formatUptime, rangeText } from './format.js';
 import { arm, notify } from './alerts.js';
 import { startDemo } from './demo.js';
 
@@ -48,10 +48,15 @@ const handlers = {
     $('memBig').firstChild.textContent = d.mem.percent;
     $('memFill').style.width = `${d.mem.percent}%`;
     $('memText').textContent = `${d.mem.usedGb} / ${d.mem.totalGb} GB`;
-    if (d.hist) drawChart(d.hist);
+    $('uptimeBig').textContent = formatUptime(d.uptimeMin);
+    $('hostSub').textContent = d.host;
+    if (d.hist) {
+      drawChart(d.hist);
+      $('memSparkPath').setAttribute('d', sparkPath(d.hist.mem, 120, 30).line);
+      $('cpuRange').textContent = rangeText(d.hist.cpu);
+    }
   },
   weather(d) {
-    $('weatherCell').hidden = false;
     $('weatherTemp').textContent = `${d.temp}°`;
     $('weatherText').textContent = [d.name, d.text].filter(Boolean).join(' · ');
   },
@@ -190,3 +195,15 @@ $('arm').addEventListener('click', async () => {
   $('arm').hidden = true;
 });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+// Páginas deslizables: los puntitos siguen el scroll y también navegan.
+const pagesEl = $('pages');
+const dots = [...document.querySelectorAll('#dots button')];
+pagesEl.addEventListener('scroll', () => {
+  const i = Math.round(pagesEl.scrollLeft / pagesEl.clientWidth);
+  dots.forEach((d, n) => d.classList.toggle('on', n === i));
+}, { passive: true });
+dots.forEach((d, n) => d.addEventListener('click', () => pagesEl.scrollTo({ left: n * pagesEl.clientWidth, behavior: 'smooth' })));
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') pagesEl.scrollBy({ left: (e.key === 'ArrowRight' ? 1 : -1) * pagesEl.clientWidth, behavior: 'smooth' });
+});
