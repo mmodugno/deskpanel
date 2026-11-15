@@ -7,6 +7,6 @@
   "engines": { "node": ">=20" },
   "scripts": {
     "start": "node agent/src/index.js",
-    "test": "node --test \"agent/test/*.test.js\""
+    "test": "node --test"
   }
 }
