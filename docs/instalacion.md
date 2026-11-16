@@ -19,12 +19,15 @@ Necesitás [Node.js](https://nodejs.org) 20 o más nuevo y bajar este repo (`git
 
 ### macOS
 
+El arranque automático es **opcional**. Lo normal en una Mac de trabajo es iniciarlo a mano cuando lo necesitás:
+
 ```bash
-cd scripts/mac
-./instalar-inicio-automatico.sh
+npm start -- --usb
 ```
 
-Arranca solo al iniciar sesión y en **modo USB** (solo escucha en `localhost`, no abre puertos en la red; pensado para una Mac de trabajo). Para quitarlo: `./instalar-inicio-automatico.sh --quitar`. También podés hacer doble clic en `deskpanel.command` para usarlo sin instalar nada.
+o hacer doble clic en `scripts/mac/deskpanel.command` (también en modo USB). Corre mientras la ventana esté abierta; al cerrarla, se detiene y no queda nada en segundo plano.
+
+Si más adelante querés que arranque solo al iniciar sesión: `scripts/mac/instalar-inicio-automatico.sh` (y `--quitar` para sacarlo). El modo USB solo escucha en `localhost`, así que no abre puertos en la red.
 
 > Estos scripts los escribí sin poder ejecutarlos en Windows ni en Mac. Si algo falla, abrí un issue con el mensaje de error.
 
