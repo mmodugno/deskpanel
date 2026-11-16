@@ -13,6 +13,7 @@ import { createMedia, startMedia } from './media.js';
 import { startMetrics } from './metrics.js';
 import { startWeather } from './weather.js';
 import { lanAddresses } from './network.js';
+import { createUsbWatcher } from './usb.js';
 
 const usb = process.argv.includes('--usb');
 const cfg = loadConfig();
@@ -44,9 +45,9 @@ bus.publish('claude', { sessions: [], activity: sessions.activity(), last: null 
 server.listen(cfg.port, cfg.host, () => {
   console.log('deskpanel listo\n');
   if (usb) {
-    console.log(`  Modo USB (solo localhost). Conectá el celular y corré:`);
-    console.log(`    adb reverse tcp:${cfg.port} tcp:${cfg.port}`);
-    console.log(`  Abrí en el celular: http://localhost:${cfg.port}/?token=${token}`);
+    console.log(`  Modo USB (solo localhost). Conectá el celular con el cable: el puente (adb reverse) se arma solo.`);
+    console.log(`  Primera vez, abrí en el celular: http://localhost:${cfg.port}/?token=${token}`);
+    createUsbWatcher({ port: cfg.port, log: (m) => console.log(`  [usb] ${m}`) }).start();
   } else {
     for (const ip of lanAddresses()) {
       console.log(`  Abrí en el celular/tablet: http://${ip}:${cfg.port}/?token=${token}`);
