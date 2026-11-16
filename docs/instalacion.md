@@ -49,14 +49,17 @@ La PC y el celular tienen que estar en la misma red Wi-Fi.
 
 ### Por cable USB
 
-1. Activá la **depuración USB** en el celular y conectalo.
-2. Corré `adb reverse tcp:4747 tcp:4747` en la PC (necesitás `adb`: en Windows, "Platform Tools" de Android; en Mac, `brew install --cask android-platform-tools`).
-3. En el celular abrí `http://localhost:4747/` con la clave que muestra `/pair` y agregalo a la pantalla principal.
+**Una sola vez:**
+1. En el celular activá las **Opciones de desarrollador** (Ajustes → Acerca del teléfono → tocá 7 veces el número de compilación) y dentro, la **Depuración USB**.
+2. En la PC instalá `adb` (Windows: "Platform Tools" de Android; Mac: `brew install --cask android-platform-tools`).
+3. Conectá el cable, iniciá el agente con `--usb` y aceptá en el celular "¿Permitir la depuración USB?" (tildá "Permitir siempre desde esta computadora").
+4. Abrí en el celular el link `http://localhost:4747/?token=...` que muestra el agente (o `/pair`) y agregalo a la pantalla principal.
 
-En Windows el agente arranca en modo Wi-Fi; para usar el cable sin tocar nada más, iniciá con `node agent/src/index.js --usb`.
+**Cada vez que lo uses:** iniciá el agente con `--usb` y conectá el cable. El puente (`adb reverse`) se arma solo, también si desenchufás y volvés a enchufar, y después abrís el ícono en el celular. No hay que correr nada más.
 
 ## Problemas comunes
 
 - **No carga en el celular:** revisá que estén en la misma red y que el Firewall de Windows no bloquee a Node (la primera vez aparece un aviso: permití redes privadas).
+- **El celular no encuentra nada por USB:** mirá los mensajes `[usb]` del agente. Los más comunes: falta `adb`, no aceptaste la depuración USB en el celular, o el cable es solo de carga (probá con otro).
 - **Dice "token inválido":** abrí de nuevo el link de `/pair`. La clave está en `~/.deskpanel/token`; si la borrás se genera otra y hay que reconectar.
 - **Cambió la IP de la PC:** el link viejo deja de andar; copiá el nuevo desde `/pair`. Conviene fijarle una IP a la PC en el router.

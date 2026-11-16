@@ -53,10 +53,9 @@ La primera vez se abre en tu PC una página (`/pair`) con el link de conexión; 
 
 ```bash
 npm start -- --usb
-adb reverse tcp:4747 tcp:4747
 ```
 
-En este modo el agente escucha solo en `127.0.0.1` y el celular entra por el cable (necesita `adb` y depuración USB). Pensado para compus donde no querés exponer nada a la red.
+En este modo el agente escucha solo en `127.0.0.1`, detecta el celular conectado y arma solo el puente `adb reverse` (también al reconectar). Necesita `adb` en la PC y la depuración USB activada en el celular una vez. Pensado para compus donde no querés exponer nada a la red.
 
 ### Configuración (opcional)
 
@@ -87,7 +86,7 @@ Mirá [docs/claude-code.md](docs/claude-code.md) para conectar los hooks (estado
 npm test
 ```
 
-65 tests con `node --test` (token, métricas, sesiones, permisos, pomodoro con reloj falso, GitHub y calendario con datos simulados, reproductor, servidor HTTP, SSE y funciones del panel). El CI corre en Ubuntu, Windows y macOS con Node 20 y 22.
+69 tests con `node --test` (token, métricas, sesiones, permisos, pomodoro con reloj falso, GitHub y calendario con datos simulados, reproductor, servidor HTTP, SSE y funciones del panel). El CI corre en Ubuntu, Windows y macOS con Node 20 y 22.
 
 ## Estado y pendientes
 
