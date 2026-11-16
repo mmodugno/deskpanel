@@ -4,6 +4,7 @@ import { extname, join, normalize, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { extractToken, tokenMatches } from './auth.js';
 import { hookOutput } from './permissions.js';
+import { isLoopback, pairPage } from './pair.js';
 
 const PANEL_DIR = resolve(fileURLToPath(new URL('../../panel', import.meta.url)));
 const TYPES = {
@@ -32,13 +33,20 @@ function readBody(req) {
   });
 }
 
-export function createServer({ token, bus, sessions, permissions, focus, media }) {
+export function createServer({ token, bus, sessions, permissions, focus, media, pairing }) {
   return http.createServer(async (req, res) => {
     const url = new URL(req.url, 'http://localhost');
     const json = (status, body) => {
       res.writeHead(status, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(body));
     };
+
+    // Página de emparejamiento: solo desde la propia PC (nunca por la red).
+    if (req.method === 'GET' && url.pathname === '/pair') {
+      if (!pairing || !isLoopback(req.socket.remoteAddress)) return json(404, { error: 'not-found' });
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+      return res.end(pairPage(pairing.urls(), pairing.usbUrl()));
+    }
 
     // Los archivos del panel son públicos; los datos y los hooks piden token.
     if (req.method === 'GET' && !url.pathname.startsWith('/api/')) {

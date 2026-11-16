@@ -1,5 +1,7 @@
 import { loadConfig } from './config.js';
-import { createToken } from './auth.js';
+import { loadOrCreateToken } from './token-store.js';
+import { pairUrls } from './pair.js';
+import { execFile } from 'node:child_process';
 import { createBus } from './bus.js';
 import { createSessions } from './claude-sessions.js';
 import { createServer } from './server.js';
@@ -16,7 +18,7 @@ const usb = process.argv.includes('--usb');
 const cfg = loadConfig();
 if (usb) cfg.host = '127.0.0.1'; // solo local: el celular entra por adb reverse
 
-const token = process.env.DESKPANEL_TOKEN || createToken();
+const { token, created } = loadOrCreateToken();
 const bus = createBus();
 const sessions = createSessions();
 const permissions = createPermissions({
@@ -26,7 +28,11 @@ const permissions = createPermissions({
 const focus = startFocus(bus, cfg.focus);
 const media = createMedia();
 startMedia(bus, media);
-const server = createServer({ token, bus, sessions, permissions, focus, media });
+const pairing = {
+  urls: () => pairUrls(lanAddresses(), cfg.port, token),
+  usbUrl: () => `http://localhost:${cfg.port}/?token=${token}`,
+};
+const server = createServer({ token, bus, sessions, permissions, focus, media, pairing });
 
 startMetrics(bus, cfg.metricsIntervalMs);
 startWeather(bus, cfg.weather);
@@ -46,8 +52,20 @@ server.listen(cfg.port, cfg.host, () => {
       console.log(`  Abrí en el celular/tablet: http://${ip}:${cfg.port}/?token=${token}`);
     }
   }
-  console.log(`\n  Hook de Claude Code: ver docs/claude-code.md`);
+  console.log(`\n  Emparejar un dispositivo: http://localhost:${cfg.port}/pair`);
+  console.log(`  Hook de Claude Code: ver docs/claude-code.md`);
+
+  // La primera vez (o con --open) abre la página para conectar el celular.
+  if (created || process.argv.includes('--open')) openInBrowser(`http://localhost:${cfg.port}/pair`);
 });
+
+function openInBrowser(url) {
+  const [cmd, args] =
+    process.platform === 'win32' ? ['cmd', ['/c', 'start', '', url]]
+    : process.platform === 'darwin' ? ['open', [url]]
+    : ['xdg-open', [url]];
+  execFile(cmd, args, () => {}); // si falla, el link ya está impreso en la consola
+}
 
 const stop = () => {
   bus.closeAll();

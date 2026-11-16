@@ -33,6 +33,10 @@ Todo por la red local o por cable USB, **sin nube y sin cuentas**.
 - **Panel** (`panel/`): una PWA en JavaScript vanilla. Se abre desde el navegador del celular/tablet, se instala a pantalla completa y mantiene la pantalla encendida.
 - **Seguridad**: cada arranque genera un token aleatorio; sin él, la API no responde. El token viaja en el link que imprime el agente y el panel lo guarda y lo saca de la barra de direcciones.
 
+## Instalación
+
+Guía paso a paso (arranque automático en Windows y Mac, y cómo instalar el panel en el celular como una app): **[docs/instalacion.md](docs/instalacion.md)**.
+
 ## Uso
 
 Requisitos: Node 20 o más nuevo en la compu.
@@ -43,7 +47,7 @@ cd deskpanel
 npm start
 ```
 
-El agente imprime un link como `http://192.168.1.5:4747/?token=...`. Abrilo en el celular o la tablet (misma red Wi-Fi), tocá el botón para activar sonido y listo.
+La primera vez se abre en tu PC una página (`/pair`) con el link de conexión; también lo imprime en la consola. Abrilo en el celular o la tablet (misma red Wi-Fi), agregalo a la pantalla principal, tocá el botón para activar sonido y listo. La clave se guarda en `~/.deskpanel/token`, así que no hay que reconectar al reiniciar.
 
 ### Modo USB (sin abrir puertos en la red)
 
@@ -83,7 +87,7 @@ Mirá [docs/claude-code.md](docs/claude-code.md) para conectar los hooks (estado
 npm test
 ```
 
-61 tests con `node --test` (token, métricas, sesiones, permisos, pomodoro con reloj falso, GitHub y calendario con datos simulados, reproductor, servidor HTTP, SSE y funciones del panel). El CI corre en Ubuntu, Windows y macOS con Node 20 y 22.
+65 tests con `node --test` (token, métricas, sesiones, permisos, pomodoro con reloj falso, GitHub y calendario con datos simulados, reproductor, servidor HTTP, SSE y funciones del panel). El CI corre en Ubuntu, Windows y macOS con Node 20 y 22.
 
 ## Estado y pendientes
 

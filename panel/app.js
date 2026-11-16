@@ -276,6 +276,7 @@ connect();
 
 $('arm').addEventListener('click', async () => {
   await arm();
+  try { await document.documentElement.requestFullscreen?.(); } catch {} // pantalla completa donde se pueda
   $('arm').hidden = true;
 });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
