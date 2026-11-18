@@ -79,10 +79,13 @@ const handlers = {
       : '<path d="M8 5v14l11-7z" fill="currentColor"/>';
   },
   calendar(d) {
+    document.querySelector('.calendar').hidden = false; // solo llega si hay calendario configurado
     calendarEvents = d.events;
     renderCalendar();
   },
   github(d) {
+    $('page-github').hidden = false; // solo llega si hay repos configurados
+    document.querySelector('#dots button[aria-label="GitHub"]').hidden = false;
     renderRepos(d.repos);
   },
   permissions(d) {
