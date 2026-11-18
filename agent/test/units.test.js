@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createToken, tokenMatches, extractToken } from '../src/auth.js';
 import { cpuPercent, memoryInfo } from '../src/metrics.js';
-import { createSessions, projectName } from '../src/claude-sessions.js';
+import { createSessions, projectName, describeTool } from '../src/claude-sessions.js';
 import { describeCode, fetchWeather } from '../src/weather.js';
 import { lanAddresses } from '../src/network.js';
 import { loadConfig } from '../src/config.js';
@@ -58,6 +58,38 @@ test('sesiones: transiciones de estado y SessionEnd', () => {
   assert.equal(s.list()[0].message, '');
   s.apply({ ...base, hook_event_name: 'SessionEnd' });
   assert.equal(s.list().length, 0);
+});
+
+test('sesiones: prompt, herramienta en curso y duración de la tarea', () => {
+  let t = 1000;
+  const s = createSessions(() => t);
+  const base = { session_id: 'a', cwd: '/p/app' };
+  s.apply({ ...base, hook_event_name: 'UserPromptSubmit', prompt: 'arreglá\n  el   login' });
+  assert.equal(s.list()[0].prompt, 'arreglá el login');
+  assert.equal(s.list()[0].doing, '');
+  t = 2000;
+  s.apply({ ...base, hook_event_name: 'PreToolUse', tool_name: 'Edit', tool_input: { file_path: 'C:\\x\\src\\login.js' } });
+  assert.equal(s.list()[0].doing, 'editando login.js');
+  s.apply({ ...base, hook_event_name: 'PostToolUse', tool_name: 'Edit' });
+  assert.equal(s.list()[0].doing, 'editando login.js', 'PostToolUse conserva lo último');
+  s.apply({ ...base, hook_event_name: 'Notification', message: 'permiso' });
+  t = 1000 + 5 * 60000;
+  s.apply({ ...base, hook_event_name: 'Stop' });
+  const done = s.list()[0];
+  assert.equal(done.took, 5 * 60000, 'pedir permiso no corta la tarea');
+  assert.equal(done.doing, '');
+  assert.equal(done.prompt, 'arreglá el login');
+});
+
+test('describeTool: frases cortas por herramienta', () => {
+  assert.equal(describeTool('Bash', { command: 'npm test\nmás' }), '$ npm test');
+  assert.equal(describeTool('Write', { file_path: '/a/b/c.md' }), 'escribiendo c.md');
+  assert.equal(describeTool('Grep', { pattern: 'TODO' }), 'buscando TODO');
+  assert.equal(describeTool('WebFetch', { url: 'https://docs.x.com/a' }), 'leyendo docs.x.com');
+  assert.equal(describeTool('WebFetch', { url: 'no es url' }), 'leyendo una página');
+  assert.equal(describeTool('mcp__slack__read_channel', {}), 'read_channel (slack)');
+  assert.equal(describeTool('Raro', null), 'Raro');
+  assert.equal(describeTool(undefined), 'trabajando');
 });
 
 test('sesiones: ignora eventos desconocidos y payloads corruptos', () => {

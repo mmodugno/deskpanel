@@ -12,6 +12,7 @@ import { startCalendar } from './calendar.js';
 import { createMedia, startMedia } from './media.js';
 import { startMetrics } from './metrics.js';
 import { startWeather } from './weather.js';
+import { startSlack } from './slack.js';
 import { lanAddresses } from './network.js';
 import { createUsbWatcher } from './usb.js';
 
@@ -39,6 +40,7 @@ startMetrics(bus, cfg.metricsIntervalMs);
 startWeather(bus, cfg.weather);
 startGithub(bus, cfg.github);
 startCalendar(bus, cfg.calendarUrl);
+startSlack(bus, process.env.SLACK_TOKEN || cfg.slack?.token);
 bus.publish('permissions', { pending: [] });
 bus.publish('claude', { sessions: [], activity: sessions.activity(), last: null });
 

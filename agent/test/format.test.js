@@ -145,3 +145,28 @@ test('github: etiqueta de PRs', () => {
   assert.equal(prLabel(0), '0 PRs');
   assert.equal(prLabel(1), '1 PR');
 });
+
+import { sessionDetail, formatDuration, meetingLevel } from '../../panel/format.js';
+
+test('sessionDetail: qué hace, qué necesita o cuánto tardó', () => {
+  assert.equal(sessionDetail({ state: 'working', doing: '$ npm test' }), '$ npm test');
+  assert.equal(sessionDetail({ state: 'working', doing: '' }), 'pensando…');
+  assert.equal(sessionDetail({ state: 'waiting', message: 'permiso' }), 'permiso');
+  assert.equal(sessionDetail({ state: 'done', took: 4 * 60000 }), 'listo en 4 min');
+  assert.equal(sessionDetail({ state: 'done', took: null }), '');
+  assert.equal(formatDuration(42000), '42 s');
+  assert.equal(formatDuration(95 * 60000), '1 h 35 min');
+});
+
+test('meetingLevel: aviso a 10 min y al empezar', () => {
+  const now = 1_000_000_000;
+  const at = (min, allDay = false) => ({ start: now + min * 60000, end: now + (min + 30) * 60000, allDay });
+  assert.equal(meetingLevel(at(30), now), null);
+  assert.equal(meetingLevel(at(10), now), 'soon');
+  assert.equal(meetingLevel(at(2), now), 'soon');
+  assert.equal(meetingLevel(at(1), now), 'now');
+  assert.equal(meetingLevel(at(-4), now), 'now');
+  assert.equal(meetingLevel(at(-6), now), null);
+  assert.equal(meetingLevel(at(5, true), now), null);
+  assert.equal(meetingLevel(null, now), null);
+});
