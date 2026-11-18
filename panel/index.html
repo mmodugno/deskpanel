@@ -34,17 +34,23 @@
       <div class="label" id="weatherText">Clima sin configurar</div>
       <div id="weatherTemp" class="big">--°</div>
     </section>
-    <section class="card calendar" aria-label="Próximo evento">
+    <section class="card calendar" aria-label="Próximo evento" hidden>
       <div class="label">Próximo</div>
       <div id="calMain" class="cal-main"><div class="empty">Calendario sin configurar</div></div>
       <ul id="calMore" class="cal-more"></ul>
     </section>
-
+    </main>
+    <main class="page board" id="page-claude" aria-label="Claude Code">
     <section class="card claude" aria-label="Sesiones de Claude Code">
       <div class="label">Claude Code</div>
       <ul id="sessions" class="sessions"></ul>
     </section>
 
+    <section class="card activity" aria-label="Actividad de Claude Code hoy">
+      <div class="label">Claude Code hoy</div>
+      <div id="bars" class="bars"></div>
+      <div class="hours"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>23h</span></div>
+    </section>
     </main>
     <main class="page board" id="page-system" aria-label="Sistema">
     <section class="card gauge" aria-label="Procesador">
@@ -94,13 +100,6 @@
         <path id="cpuPath" class="line-cpu"/>
       </svg>
     </section>
-
-    <section class="card activity" aria-label="Actividad de Claude Code hoy">
-      <div class="label">Claude Code hoy</div>
-      <div id="bars" class="bars"></div>
-      <div class="hours"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>23h</span></div>
-    </section>
-
     </main>
     <main class="page board" id="page-focus" aria-label="Foco">
     <section class="card focus" aria-label="Temporizador de foco">
@@ -127,7 +126,7 @@
       </div>
     </section>
 
-    <section class="card music" aria-label="Música">
+    <section class="card music" aria-label="Música" data-idle="true">
       <div class="label">Ahora suena</div>
       <div class="music-body">
         <div class="art" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor"/><circle cx="16.5" cy="16" r="2.5" fill="currentColor"/></svg></div>
@@ -143,14 +142,14 @@
       </div>
     </section>
     </main>
-    <main class="page board" id="page-github" aria-label="GitHub">
+    <main class="page board" id="page-github" aria-label="GitHub" hidden>
     <section class="card github" aria-label="Repositorios">
       <div class="label">GitHub</div>
       <ul id="repos" class="repos"><li class="empty">Sumá tus repos en config.local.json</li></ul>
     </section>
     </main>
   </div>
-  <nav id="dots" class="dots" aria-label="Páginas"><button type="button" aria-label="Inicio" class="on"></button><button type="button" aria-label="Sistema"></button><button type="button" aria-label="Foco"></button><button type="button" aria-label="GitHub"></button></nav>
+  <nav id="dots" class="dots" aria-label="Páginas"><button type="button" aria-label="Inicio" class="on"></button><button type="button" aria-label="Claude Code"></button><button type="button" aria-label="Sistema"></button><button type="button" aria-label="Foco"></button><button type="button" aria-label="GitHub" hidden></button></nav>
 
   <div id="perm" class="perm" role="alertdialog" aria-modal="true" aria-labelledby="permTitle" hidden>
     <div class="perm-card">

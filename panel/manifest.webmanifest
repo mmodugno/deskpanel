@@ -3,7 +3,7 @@
   "short_name": "deskpanel",
   "start_url": "./",
   "display": "fullscreen",
-  "orientation": "any",
+  "orientation": "landscape",
   "background_color": "#0f0a1f",
   "theme_color": "#0f0a1f",
   "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]

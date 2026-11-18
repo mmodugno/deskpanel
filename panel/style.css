@@ -275,3 +275,113 @@ body.night { filter: brightness(.55) saturate(.85); }
 @media (min-width: 900px) { .focus { grid-column: span 7; } .music { grid-column: span 5; } .calendar { grid-column: span 5; } .claude { grid-column: span 7; } }
 .github { grid-column: 1 / -1; }
 @media (max-width: 520px) { .focus-ring { width: min(100%, 190px); } }
+.page[hidden], .dots button[hidden] { display: none; }
+
+/* Sin música sonando, la tarjeta desaparece y el pomodoro ocupa toda la página. */
+.music[data-idle="true"] { display: none; }
+@media not ((orientation: landscape) and (max-height: 520px)) {
+  #page-focus:has(.music[data-idle="true"]) .focus { grid-column: 1 / -1; }
+}
+
+/* Celular acostado: todo en una sola pantalla tipo tablero, sin páginas ni scroll.
+   Las páginas se "disuelven" (display: contents) y sus tarjetas van a una grilla común. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .greeting, .host, .chip.theme, .dots, .uptime, .activity, .github, .cal-more { display: none; }
+  .bar { position: fixed; top: 6px; right: 8px; padding: 0; z-index: 3; }
+  .chip { padding: 4px; gap: 6px; background: transparent; border: 0; }
+  .chip b { display: none; }
+  .chip:not([data-state="ok"]) { padding: 4px 10px; background: var(--card); border: 1px solid var(--card-line); }
+  .chip:not([data-state="ok"]) b { display: inline; }
+  .arm { position: fixed; left: 24px; bottom: 20px; width: calc(5 / 12 * 100vw - 48px); margin: 0; z-index: 4; padding: 8px 14px; min-height: 40px; font-size: 13px; box-shadow: 0 8px 24px rgba(0, 0, 0, .5); }
+
+  .pages {
+    overflow: hidden; scroll-snap-type: none;
+    display: grid; gap: 8px; padding: 8px;
+    grid-template-columns: 5fr 4fr 3fr;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      "clock  weather cpu"
+      "claude extra   mem"
+      "claude focus   focus";
+  }
+  .pages:has(.calendar:not([hidden])) {
+    grid-template-areas:
+      "clock    weather cpu"
+      "calendar extra   mem"
+      "claude   focus   focus";
+  }
+  .page { display: contents; }
+
+  .board .card { min-height: 0; padding: 10px 14px; border-radius: 16px; overflow: hidden; }
+  .label { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+  .sub { font-size: 12px; }
+  .big { font-size: 30px; margin: 0; line-height: 1.1; }
+
+  .clock { grid-area: clock; }
+  .time { font-size: min(17vh, 9vw); }
+  .date { margin-top: 4px; font-size: 13px; }
+
+  .weather { grid-area: weather; }
+  .weather .big { font-size: 40px; }
+
+  .calendar { grid-area: calendar; gap: 2px; }
+  .cal-title { font-size: 15px; }
+  .cal-when { font-size: 12px; }
+
+  .claude { grid-area: claude; gap: 6px; }
+  .sessions { gap: 6px; }
+  .session { padding: 6px 10px; border-radius: 10px; }
+  .s-name { font-size: 14px; }
+  .s-state, .s-msg { font-size: 12px; }
+  .s-since { font-size: 11px; }
+  .empty { padding: 6px 0; font-size: 12px; }
+
+  /* CPU y memoria: número + barrita, mismo formato. */
+  .gauge { grid-area: cpu; display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; align-content: center; align-items: center; column-gap: 10px; }
+  .gauge .ring { grid-row: 1 / 3; width: min(64px, 17vh); }
+  .gauge .ring-text { font-size: 17px; padding-top: 34%; }
+  .gauge .label { align-self: end; }
+  .gauge .sub { align-self: start; white-space: nowrap; font-size: 11px; }
+  .mem { grid-area: mem; justify-content: center; gap: 4px; }
+  .mem .meter { margin: 0; height: 6px; }
+  .mem .spark { display: none; }
+
+  /* Centro: música si suena; si no, el gráfico. */
+  .chart, .music { grid-area: extra; }
+  .pages:has(.music:not([data-idle="true"])) .chart { display: none; }
+  .chart-head { margin-bottom: 2px; }
+  .chart-head .label { display: none; }
+  .legend { font-size: 10px; }
+  #chart { min-height: 0; }
+
+  /* Pomodoro en una fila: tiempo, ciclos y botones. */
+  .focus { grid-area: focus; padding: 8px 14px; flex-direction: row; align-items: center; gap: 14px; }
+  .focus #phaseLabel { writing-mode: vertical-rl; transform: rotate(180deg); }
+  .focus-body { flex: 1; flex-wrap: nowrap; align-items: center; gap: 14px; margin-top: 0; justify-content: flex-start; }
+  .focus-ring { width: auto; aspect-ratio: auto; flex: none; }
+  .focus-ring svg { display: none; }
+  .focus-time { position: static; display: block; font-size: 40px; line-height: 1; }
+  .focus-side { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; }
+  .focus-dots { flex-direction: column; gap: 4px; }
+  .focus-dots i { width: 6px; height: 6px; }
+  #focusToday { display: none; }
+  .focus-actions { flex: 1; grid-template-columns: 2fr 1fr 1fr; gap: 6px; }
+  .focus-secondary { display: contents; }
+  .btn { min-height: 38px; font-size: 14px; border-radius: 12px; }
+  #focusPrimary { font-size: 14px; }
+  .btn.soft { min-height: 38px; font-size: 12px; }
+
+  .music { gap: 4px; justify-content: center; }
+  .music .label, .art { display: none; }
+  .music-title { font-size: 14px; }
+  .music-controls { gap: 10px; }
+  .round { width: 34px; height: 34px; }
+  .round.big { width: 40px; height: 40px; }
+  .round svg { width: 16px; height: 16px; }
+
+  .perm-card { padding: 16px 20px; }
+  .perm-title { margin: 6px 0 8px; font-size: 22px; }
+  .perm-detail { max-height: 30vh; }
+  .perm-timer { margin: 10px 0; }
+  .perm .btn { min-height: 52px; font-size: 18px; }
+}
