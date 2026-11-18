@@ -1,5 +1,6 @@
-import { formatTime, formatDate, formatSince, isHot, alertFor, readToken, greetingFor, isNight, STATE_LABEL, arcDash, sparkPath, barHeights, THEMES, nextTheme, themeName, timeLeft, permissionTitle, formatUptime, rangeText,
-  PHASE_LABEL, focusRemaining, clockMs, focusProgress, primaryLabel, eventTime, relativeStart, CI_LABEL, prLabel } from './format.js';
+import { formatTime, formatDate, isHot, alertFor, readToken, greetingFor, isNight, STATE_LABEL, arcDash, sparkPath, barHeights, THEMES, nextTheme, themeName, timeLeft, permissionTitle, formatUptime, rangeText,
+  PHASE_LABEL, focusRemaining, clockMs, focusProgress, primaryLabel, eventTime, relativeStart, CI_LABEL, prLabel,
+  sessionDetail, meetingLevel } from './format.js';
 import { arm, notify } from './alerts.js';
 import { startDemo } from './demo.js';
 
@@ -35,7 +36,6 @@ function tickClock() {
   $('date').textContent = formatDate(now);
   $('greeting').textContent = greetingFor(now.getHours());
   document.body.classList.toggle('night', isNight(now.getHours()));
-  renderSessionAges();
 }
 setInterval(tickClock, 1000);
 tickClock();
@@ -83,6 +83,9 @@ const handlers = {
     calendarEvents = d.events;
     renderCalendar();
   },
+  slack(d) {
+    renderSlack(d);
+  },
   github(d) {
     $('page-github').hidden = false; // solo llega si hay repos configurados
     document.querySelector('#dots button[aria-label="GitHub"]').hidden = false;
@@ -105,6 +108,7 @@ let firstClaudeEvent = true; // el estado inicial al conectar no dispara alertas
 
 let focusState = null;
 let calendarEvents = null;
+const meetingAlerted = new Set(); // reuniones ya avisadas (inicio|título|nivel)
 let shownPermissions = [];
 let currentPerm = null;
 
@@ -171,13 +175,53 @@ function renderCalendar() {
   }
   const [first, ...rest] = upcoming;
   main.append(el('div', 'cal-title', first.title), el('div', 'cal-when', `${relativeStart(first, now)} · ${eventTime(first)}`));
+  // Aviso de reunión cercana: la tarjeta se resalta y suena una sola vez por nivel.
+  const level = meetingLevel(first, now);
+  const card = document.querySelector('.calendar');
+  if (level) card.dataset.meeting = level;
+  else delete card.dataset.meeting;
+  const key = `${first.start}|${first.title}|${level}`;
+  if (level && !meetingAlerted.has(key)) {
+    meetingAlerted.add(key);
+    notify(`meeting-${level}`, $('flash'));
+  }
   for (const e of rest.slice(0, 3)) {
     const li = el('li');
     li.append(el('span', '', e.title), el('span', '', `${relativeStart(e, now)} · ${eventTime(e)}`));
     more.append(li);
   }
 }
-setInterval(renderCalendar, 30000);
+setInterval(renderCalendar, 15000);
+
+// Slack: primero los DMs sin leer, después las menciones de hoy. Suena si llega algo nuevo.
+let slackSeen = null;
+function renderSlack(d) {
+  const counts = $('slackCounts');
+  const ul = $('slackList');
+  ul.replaceChildren();
+  if (d.error) {
+    counts.textContent = '';
+    ul.append(el('li', 'empty', `No pude leer Slack (${d.error})`));
+    return;
+  }
+  counts.replaceChildren();
+  const pill = (n, text, cls) => el('span', `slack-pill ${cls}${n ? '' : ' zero'}`, `${n} ${text}`);
+  counts.append(pill(d.unreadDms, d.unreadDms === 1 ? 'DM' : 'DMs', 'dm'), pill(d.mentionsToday, d.mentionsToday === 1 ? 'mención' : 'menciones', 'at'));
+  for (const dm of d.dms) {
+    const li = el('li', 'slack-item dm');
+    li.append(el('span', 'slack-from', dm.from), el('span', 'slack-count', String(dm.count)));
+    ul.append(li);
+  }
+  for (const m of d.mentions) {
+    const li = el('li', 'slack-item at');
+    li.append(el('span', 'slack-from', `${m.from} · ${m.where}`), el('span', 'slack-time', formatTime(new Date(m.ts))), el('span', 'slack-text', m.text));
+    ul.append(li);
+  }
+  if (!d.dms.length && !d.mentions.length) ul.append(el('li', 'empty', 'Nada pendiente'));
+  const latest = d.mentions[0]?.ts ?? 0;
+  if (slackSeen && (d.unreadDms > slackSeen.dms || latest > slackSeen.latest)) notify('slack', $('flash'));
+  slackSeen = { dms: d.unreadDms, latest };
+}
 
 function renderRepos(repos) {
   const ul = $('repos');
@@ -235,19 +279,11 @@ function renderSessions(list) {
     li.dataset.state = s.state;
     const state = el('span', 's-state');
     state.append(document.createElement('i'), STATE_LABEL[s.state] ?? s.state);
-    const age = el('span', 's-since');
-    age.dataset.since = s.since;
     li.append(el('span', 's-name', s.project), state);
-    if (s.message) li.append(el('span', 's-msg', s.message));
-    li.append(age);
+    if (s.prompt) li.append(el('span', 's-prompt', `“${s.prompt}”`));
+    const detail = sessionDetail(s);
+    if (detail) li.append(el('span', 's-msg', detail));
     ul.append(li);
-  }
-  renderSessionAges();
-}
-function renderSessionAges() {
-  const now = Date.now();
-  for (const el of document.querySelectorAll('.s-since')) {
-    el.textContent = formatSince(Number(el.dataset.since), now);
   }
 }
 

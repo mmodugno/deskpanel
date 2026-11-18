@@ -7,6 +7,7 @@ Agregá esto a tu `~/.claude/settings.json` (reemplazá `TOKEN` por la clave que
 {
   "hooks": {
     "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "curl -s -X POST \"http://localhost:4747/api/hook?token=TOKEN\" -d @-" }] }],
+    "PreToolUse":       [{ "hooks": [{ "type": "command", "command": "curl -s -X POST \"http://localhost:4747/api/hook?token=TOKEN\" -d @-" }] }],
     "Notification":     [{ "hooks": [{ "type": "command", "command": "curl -s -X POST \"http://localhost:4747/api/hook?token=TOKEN\" -d @-" }] }],
     "Stop":             [{ "hooks": [{ "type": "command", "command": "curl -s -X POST \"http://localhost:4747/api/hook?token=TOKEN\" -d @-" }] }],
     "SessionEnd":       [{ "hooks": [{ "type": "command", "command": "curl -s -X POST \"http://localhost:4747/api/hook?token=TOKEN\" -d @-" }] }]
@@ -19,9 +20,10 @@ La clave se guarda la primera vez y se reutiliza siempre; si preferís otra, def
 
 | Evento | Lámpara en el panel |
 |---|---|
-| `UserPromptSubmit` | ámbar pulsando (trabajando) |
+| `UserPromptSubmit` | ámbar pulsando (trabajando) + lo que le pediste |
+| `PreToolUse` | qué está haciendo ahora ("editando app.js", "$ npm test") |
 | `Notification` | roja titilando + sonido + vibración (te necesita) |
-| `Stop` | verde + sonido corto (terminó) |
+| `Stop` | verde + sonido corto + cuánto tardó la tarea |
 | `SessionEnd` | desaparece |
 
 ## Aprobar permisos desde el panel

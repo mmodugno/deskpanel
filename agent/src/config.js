@@ -9,6 +9,7 @@ export const DEFAULTS = {
   github: [], // ["usuario/repo", ...]
   calendarUrl: null, // dirección secreta .ics de tu calendario
   weather: null, // { latitude, longitude, name } — solo en config.local.json
+  slack: null, // { token: "xoxp-..." } — solo lectura; también sirve SLACK_TOKEN en el entorno
 };
 
 export function loadConfig(path = 'config.local.json', env = process.env) {

@@ -136,9 +136,18 @@ export function startDemo(handlers) {
   const tomorrow9 = new Date(); tomorrow9.setDate(tomorrow9.getDate() + 1); tomorrow9.setHours(9, 0, 0, 0);
   handlers.calendar({
     events: [
-      { title: 'Reunión de equipo', start: at(40), end: at(70), allDay: false },
+      { title: 'Reunión de equipo', start: at(8), end: at(38), allDay: false },
       { title: 'Clase de inglés', start: at(150), end: at(210), allDay: false },
       { title: 'Entrega del proyecto', start: tomorrow9.getTime(), end: tomorrow9.getTime() + 3600000, allDay: false },
+    ],
+  });
+  handlers.slack({
+    unreadDms: 3,
+    dms: [{ from: 'Lucía', count: 2 }, { from: 'Martín', count: 1 }],
+    mentionsToday: 2,
+    mentions: [
+      { from: 'Sofía', where: '#deploys', text: '@vos ¿podés revisar el PR del login antes de las 5?', ts: at(-12) },
+      { from: 'Diego', where: '#equipo', text: '@vos te dejé los números en el doc', ts: at(-95) },
     ],
   });
   handlers.github({

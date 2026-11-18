@@ -50,6 +50,18 @@ export function notify(kind, flashEl) {
     flashEl.classList.remove('on');
     void flashEl.offsetWidth; // reinicia la animación
     flashEl.classList.add('on');
+  } else if (kind === 'slack') {
+    beep([880, 1175]);
+    navigator.vibrate?.(80);
+  } else if (kind === 'meeting-soon') {
+    beep([587, 740]);
+    navigator.vibrate?.(150);
+  } else if (kind === 'meeting-now') {
+    beep([880, 698, 880, 698]);
+    navigator.vibrate?.([400, 150, 400]);
+    flashEl.classList.remove('on');
+    void flashEl.offsetWidth;
+    flashEl.classList.add('on');
   } else if (kind === 'done') {
     beep([523, 784]);
     navigator.vibrate?.(120);

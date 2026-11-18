@@ -45,6 +45,31 @@ export function isNight(hour) {
 
 export const STATE_LABEL = { working: 'trabajando', waiting: 'te necesita', done: 'terminó' };
 
+export function formatDuration(ms) {
+  const s = Math.round(Math.max(0, ms) / 1000);
+  if (s < 60) return `${s} s`;
+  const min = Math.round(s / 60);
+  if (min < 60) return `${min} min`;
+  return `${Math.floor(min / 60)} h ${min % 60} min`;
+}
+
+// La línea de detalle de una sesión: qué hace, qué necesita o cuánto tardó.
+export function sessionDetail(s) {
+  if (s.state === 'waiting') return s.message || 'esperando tu respuesta';
+  if (s.state === 'done') return Number.isFinite(s.took) ? `listo en ${formatDuration(s.took)}` : '';
+  return s.doing || 'pensando…';
+}
+
+// Qué tan cerca está una reunión: 'now' (empieza en 1 min o arrancó hace menos de 5),
+// 'soon' (en 10 min o menos) o null. Los eventos de todo el día no avisan.
+export function meetingLevel(ev, now) {
+  if (!ev || ev.allDay) return null;
+  const min = (ev.start - now) / 60000;
+  if (min <= 1 && min > -5) return 'now';
+  if (min > 1 && min <= 10) return 'soon';
+  return null;
+}
+
 // El anillo de CPU es un arco de 270°: 100% de uso = 75 de 100 del perímetro.
 export function arcDash(percent) {
   const p = Math.max(0, Math.min(100, percent));
